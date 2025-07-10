@@ -20,17 +20,22 @@ const io = new Server(server)
 app.set("io", io)
 
 // 🔒 Configurar middleware de sesiones
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "secreto_por_defecto_cambiar",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // Cambiar a true en producción con HTTPS
-      maxAge: 24 * 60 * 60 * 1000, // 24 horas
-    },
-  }),
-)
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET || "secreto_por_defecto_cambiar",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Cambiar a true en producción con HTTPS
+    maxAge: 24 * 60 * 60 * 1000, // 24 horas
+  },
+})
+app.use(sessionMiddleware)
+
+// Hacer disponible el usuario en todas las vistas
+app.use((req, res, next) => {
+  res.locals.usuario = req.session.usuario || null
+  next()
+})
 
 // 🛠️ Middlewares básicos de Express
 app.use(logger("dev")) // Log de peticiones HTTP
@@ -52,6 +57,7 @@ const pedidosRouter = require("./routes/pedidos")
 const adminRouter = require("./routes/admin")
 const productosRouter = require("./routes/productos")
 const chatRouter = require("./routes/chat")
+const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
@@ -60,6 +66,7 @@ app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración
 app.use("/productos", productosRouter) // Gestión de productos
 app.use("/chat", chatRouter) // Chat de soporte
+app.use("/api", apiRouter) // Endpoints REST internos
 
 // ❌ Manejar rutas no encontradas (404)
 app.use((req, res, next) => {
@@ -80,24 +87,39 @@ app.use((err, req, res, next) => {
   })
 })
 
+// Compartir la sesión con Socket.IO
+io.use((socket, next) => {
+  sessionMiddleware(socket.request, {}, next)
+})
+
+const chatController = require("./controllers/chatController")
+
 // 💬 Configurar Socket.IO para chat en tiempo real
 io.on("connection", (socket) => {
+  const usuario = socket.request.session?.usuario
   console.log("👤 Usuario conectado al chat")
 
   // Escuchar mensajes del cliente
   socket.on("mensaje", (data) => {
     console.log(`💬 Mensaje recibido de ${data.usuario}: ${data.mensaje}`)
 
-    // Reenviar mensaje a todos los usuarios conectados
-    io.emit("mensaje", {
-      usuario: data.usuario || "Anónimo",
+    const payload = {
+      usuario: data.usuario || usuario?.nombre || "Anónimo",
       mensaje: data.mensaje,
-      rol: data.rol || "cliente",
+      rol: data.rol || usuario?.rol || "cliente",
       timestamp: new Date().toLocaleTimeString("es-ES", {
         hour: "2-digit",
         minute: "2-digit",
       }),
-    })
+    }
+
+    // Reenviar mensaje a todos los usuarios conectados
+    io.emit("mensaje", payload)
+
+    // Guardar en base de datos si hay sesión
+    if (usuario) {
+      chatController.guardarMensaje(usuario, data.mensaje, usuario.rol)
+    }
   })
 
   // Manejar desconexión
