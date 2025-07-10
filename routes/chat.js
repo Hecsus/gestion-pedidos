@@ -2,15 +2,11 @@
 const express = require("express")
 const router = express.Router()
 const { requireAuth } = require("../middlewares/auth")
+const chatController = require("../controllers/chatController")
 
 /**
  * Página del chat (requiere autenticación)
  */
-router.get("/", requireAuth, (req, res) => {
-  res.render("chat/chat", {
-    title: "Chat de Soporte",
-    usuario: req.session.usuario,
-  })
-})
+router.get("/", requireAuth, chatController.renderChat)
 
 module.exports = router

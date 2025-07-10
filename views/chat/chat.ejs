@@ -12,11 +12,31 @@
                 <div class="card-body p-0">
                     <!-- Área de mensajes -->
                     <div id="chat-container" class="p-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
-                        <div class="text-center text-muted py-3">
-                            <i class="bi bi-chat-square-dots" style="font-size: 2rem;"></i>
-                            <p class="mt-2">¡Bienvenido al chat de soporte!</p>
-                            <p class="small">Escribe tu mensaje para comenzar la conversación.</p>
-                        </div>
+                        <% if (mensajes.length === 0) { %>
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-chat-square-dots" style="font-size:2rem;"></i>
+                                <p class="mt-2">¡Bienvenido al chat de soporte!</p>
+                                <p class="small">Escribe tu mensaje para comenzar la conversación.</p>
+                            </div>
+                        <% } else { %>
+                            <% mensajes.forEach(function(m){
+                                const own = m.emisor_rol === usuario.rol;
+                                const time = new Date(m.fecha).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+                            %>
+                                <div class="mb-3">
+                                    <div class="<%= own ? 'chat-message own' : 'chat-message other' %>">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong><%= m.emisor_rol === 'admin' ? 'Admin' : usuario.nombre %></strong>
+                                                <span class="badge bg-secondary ms-1"><%= m.emisor_rol %></span>
+                                            </div>
+                                            <small class="text-muted"><%= time %></small>
+                                        </div>
+                                        <div class="mt-1"><%= m.mensaje %></div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } %>
                     </div>
                 </div>
                 <div class="card-footer">
@@ -59,7 +79,8 @@ const statusIndicator = document.getElementById('statusIndicator');
 // 👤 Información del usuario actual
 const currentUser = {
     nombre: '<%= usuario.nombre %>',
-    rol: '<%= usuario.rol %>'
+    rol: '<%= usuario.rol %>',
+    id: <%= usuario.id %>
 };
 
 // 📨 Enviar mensaje
@@ -71,7 +92,8 @@ chatForm.addEventListener('submit', (e) => {
     
     // Enviar mensaje al servidor
     socket.emit('mensaje', {
-        usuario: currentUser.nombre,
+        usuarioId: currentUser.id,
+        nombre: currentUser.nombre,
         mensaje: mensaje,
         rol: currentUser.rol
     });
@@ -90,6 +112,7 @@ socket.on('mensaje', (data) => {
 socket.on('connect', () => {
     statusIndicator.textContent = 'En línea';
     statusIndicator.className = 'badge bg-success ms-2';
+    socket.emit('joinRoom', { usuarioId: currentUser.id, rol: currentUser.rol });
     console.log('Conectado al chat');
 });
 
@@ -104,7 +127,7 @@ function addMessageToChat(data) {
     const messageDiv = document.createElement('div');
     messageDiv.className = 'mb-3';
     
-    const isOwnMessage = data.usuario === currentUser.nombre;
+    const isOwnMessage = data.rol === currentUser.rol;
     const messageClass = isOwnMessage ? 'chat-message own' : 'chat-message other';
     
     const timestamp = data.timestamp || new Date().toLocaleTimeString('es-ES', {
@@ -116,7 +139,7 @@ function addMessageToChat(data) {
         <div class="${messageClass}">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <strong>${data.usuario}</strong>
+                    <strong>${data.nombre}</strong>
                     ${data.rol ? `<span class="badge bg-secondary ms-1">${data.rol}</span>` : ''}
                 </div>
                 <small class="text-muted">${timestamp}</small>

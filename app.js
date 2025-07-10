@@ -52,6 +52,7 @@ const pedidosRouter = require("./routes/pedidos")
 const adminRouter = require("./routes/admin")
 const productosRouter = require("./routes/productos")
 const chatRouter = require("./routes/chat")
+const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
@@ -60,6 +61,7 @@ app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración
 app.use("/productos", productosRouter) // Gestión de productos
 app.use("/chat", chatRouter) // Chat de soporte
+app.use("/api", apiRouter) // API JSON
 
 // ❌ Manejar rutas no encontradas (404)
 app.use((req, res, next) => {
@@ -81,28 +83,42 @@ app.use((err, req, res, next) => {
 })
 
 // 💬 Configurar Socket.IO para chat en tiempo real
-io.on("connection", (socket) => {
-  console.log("👤 Usuario conectado al chat")
+const chatController = require('./controllers/chatController')
 
-  // Escuchar mensajes del cliente
-  socket.on("mensaje", (data) => {
-    console.log(`💬 Mensaje recibido de ${data.usuario}: ${data.mensaje}`)
+io.on('connection', (socket) => {
+  console.log('👤 Usuario conectado al chat')
 
-    // Reenviar mensaje a todos los usuarios conectados
-    io.emit("mensaje", {
-      usuario: data.usuario || "Anónimo",
-      mensaje: data.mensaje,
-      rol: data.rol || "cliente",
-      timestamp: new Date().toLocaleTimeString("es-ES", {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    })
+  socket.on('joinRoom', (data) => {
+    if (!data || !data.usuarioId) return
+    if (data.rol === 'admin') {
+      socket.join('admin')
+    }
+    socket.join(`usuario_${data.usuarioId}`)
   })
 
-  // Manejar desconexión
-  socket.on("disconnect", () => {
-    console.log("👤 Usuario desconectado del chat")
+  socket.on('mensaje', async (data) => {
+    if (!data || !data.usuarioId) return
+
+    await chatController.guardarMensaje(data.usuarioId, data.mensaje, data.rol)
+
+    const payload = {
+      nombre: data.nombre || 'Usuario',
+      mensaje: data.mensaje,
+      rol: data.rol || 'cliente',
+      timestamp: new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    }
+
+    io.to(`usuario_${data.usuarioId}`).emit('mensaje', payload)
+    if (data.rol === 'cliente') {
+      io.to('admin').emit('mensaje', payload)
+    }
+  })
+
+  socket.on('disconnect', () => {
+    console.log('👤 Usuario desconectado del chat')
   })
 })
 

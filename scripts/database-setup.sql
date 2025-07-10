@@ -48,13 +48,15 @@ CREATE TABLE IF NOT EXISTS detalles_pedido (
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 
--- 💬 Tabla de mensajes de chat/soporte
-CREATE TABLE IF NOT EXISTS mensajes_chat (
+CREATE TABLE IF NOT EXISTS mensajes_soporte (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT,
+    usuario_id INT NOT NULL,
     mensaje TEXT NOT NULL,
+    emisor_rol ENUM('cliente','admin') NOT NULL,
+    leido_admin BOOLEAN DEFAULT FALSE,
+    leido_cliente BOOLEAN DEFAULT FALSE,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
 -- 🌱 Insertar datos de ejemplo
