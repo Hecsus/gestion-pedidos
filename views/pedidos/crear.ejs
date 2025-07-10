@@ -1,0 +1,139 @@
+<!-- 🛒 Formulario para crear nuevo pedido -->
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-plus-circle"></i> Nuevo Pedido</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Mostrar errores -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> <%= error %>
+                        </div>
+                    <% } %>
+
+                    <form action="/pedidos/crear" method="POST" id="formPedido">
+                        <h5 class="mb-3">Selecciona los productos:</h5>
+                        
+                        <% if (productos && productos.length > 0) { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Precio</th>
+                                            <th>Stock</th>
+                                            <th>Cantidad</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% productos.forEach((producto, index) => { %>
+                                            <tr data-precio="<%= producto.precio %>" data-id="<%= producto.id %>">
+                                                <td>
+                                                    <strong><%= producto.nombre %></strong>
+                                                    <% if (producto.descripcion) { %>
+                                                        <br><small class="text-muted"><%= producto.descripcion %></small>
+                                                    <% } %>
+                                                </td>
+                                                <td class="text-primary fw-bold">€<%= producto.precio.toFixed(2) %></td>
+                                                <td>
+                                                    <span class="badge bg-<%= producto.stock > 10 ? 'success' : producto.stock > 0 ? 'warning' : 'danger' %>">
+                                                        <%= producto.stock %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <input 
+                                                        type="number" 
+                                                        name="productos[<%= index %>][cantidad]" 
+                                                        class="form-control cantidad-input" 
+                                                        min="0" 
+                                                        max="<%= producto.stock %>" 
+                                                        value="0"
+                                                        style="width: 80px;"
+                                                    >
+                                                    <input type="hidden" name="productos[<%= index %>][id]" value="<%= producto.id %>">
+                                                </td>
+                                                <td class="subtotal fw-bold">€0.00</td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h5 id="totalPedido" class="text-primary mb-0">Total: €0.00</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <button type="submit" class="btn btn-success btn-lg" id="btnCrearPedido" disabled>
+                                        <i class="bi bi-check-circle"></i> Crear Pedido
+                                    </button>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-warning" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> 
+                                No hay productos disponibles en este momento.
+                            </div>
+                        <% } %>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 🧮 JavaScript para calcular totales en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const cantidadInputs = document.querySelectorAll('.cantidad-input');
+    const totalElement = document.getElementById('totalPedido');
+    const btnCrear = document.getElementById('btnCrearPedido');
+
+    // Función para actualizar totales
+    function actualizarTotales() {
+        let totalGeneral = 0;
+        let hayProductos = false;
+
+        cantidadInputs.forEach(input => {
+            const fila = input.closest('tr');
+            const precio = parseFloat(fila.dataset.precio);
+            const cantidad = parseInt(input.value) || 0;
+            const subtotal = precio * cantidad;
+
+            // Actualizar subtotal de la fila
+            const subtotalElement = fila.querySelector('.subtotal');
+            subtotalElement.textContent = `€${subtotal.toFixed(2)}`;
+
+            // Sumar al total general
+            totalGeneral += subtotal;
+
+            // Verificar si hay productos seleccionados
+            if (cantidad > 0) {
+                hayProductos = true;
+            }
+        });
+
+        // Actualizar total general
+        totalElement.textContent = `Total: €${totalGeneral.toFixed(2)}`;
+
+        // Habilitar/deshabilitar botón
+        btnCrear.disabled = !hayProductos;
+    }
+
+    // Agregar event listeners a todos los inputs
+    cantidadInputs.forEach(input => {
+        input.addEventListener('input', actualizarTotales);
+    });
+
+    // Calcular totales iniciales
+    actualizarTotales();
+});
+</script>

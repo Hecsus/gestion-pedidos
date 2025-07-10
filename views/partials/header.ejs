@@ -1,0 +1,11 @@
+<header class="bg-dark text-white p-3 mb-4">
+  <div class="container d-flex justify-content-between">
+    <h3>📦 Gestión Pedidos</h3>
+    <% if (usuario) { %>
+    <span>👤 <%= usuario.nombre %> (<%= usuario.rol %>)</span>
+    <a href="/auth/logout" class="btn btn-sm btn-outline-light ms-3">Salir</a>
+    <% } else { %>
+    <a href="/auth/login" class="btn btn-sm btn-outline-light">Login</a>
+    <% } %>
+  </div>
+</header>
