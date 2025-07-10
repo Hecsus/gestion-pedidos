@@ -35,7 +35,7 @@ app.use(
 // 🛠️ Middlewares básicos de Express
 app.use(logger("dev")) // Log de peticiones HTTP
 app.use(express.json()) // Parsear JSON en el body
-app.use(express.urlencoded({ extended: false })) // Parsear formularios
+app.use(express.urlencoded({ extended: true })) // Parsear formularios con datos complejos
 app.use(cookieParser()) // Parsear cookies
 
 // 🌐 Servir archivos estáticos (CSS, JS, imágenes) - IMPORTANTE: antes de las rutas
