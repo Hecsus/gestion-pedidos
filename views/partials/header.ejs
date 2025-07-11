@@ -1,11 +1,79 @@
-<header class="bg-dark text-white p-3 mb-4">
-  <div class="container d-flex justify-content-between">
-    <h3>📦 Gestión Pedidos</h3>
-    <% if (usuario) { %>
-    <span>👤 <%= usuario.nombre %> (<%= usuario.rol %>)</span>
-    <a href="/auth/logout" class="btn btn-sm btn-outline-light ms-3">Salir</a>
-    <% } else { %>
-    <a href="/auth/login" class="btn btn-sm btn-outline-light">Login</a>
-    <% } %>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <i class="bi bi-box-seam"></i> Gestión de Pedidos
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <% if (usuario) { %>
+          <% if (usuario.rol === 'admin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin">
+                <i class="bi bi-speedometer2"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/pedidos">
+                <i class="bi bi-list-check"></i> Pedidos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/productos">
+                <i class="bi bi-box"></i> Productos
+              </a>
+            </li>
+          <% } else { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/pedidos">
+                <i class="bi bi-bag"></i> Mis Pedidos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/pedidos/crear">
+                <i class="bi bi-plus-circle"></i> Nuevo Pedido
+              </a>
+            </li>
+          <% } %>
+          <li class="nav-item">
+            <a class="nav-link" href="/chat">
+              <i class="bi bi-chat-dots"></i> Soporte
+            </a>
+          </li>
+        <% } %>
+      </ul>
+
+      <ul class="navbar-nav">
+        <% if (usuario) { %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i> <%= usuario.nombre %>
+              <span class="badge bg-secondary"><%= usuario.rol %></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/auth/logout">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+              </a></li>
+            </ul>
+          </li>
+        <% } else { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/login">
+              <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/register">
+              <i class="bi bi-person-plus"></i> Registrarse
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
   </div>
-</header>
+</nav>
