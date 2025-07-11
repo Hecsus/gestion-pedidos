@@ -228,3 +228,21 @@ footer {
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* Chat messages */
+.chat-message {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 0.25rem;
+  max-width: 75%;
+}
+
+.chat-message.own {
+  background-color: var(--primary-color);
+  color: #fff;
+  margin-left: auto;
+}
+
+.chat-message.other {
+  background-color: var(--light-color);
+}

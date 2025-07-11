@@ -77,9 +77,14 @@ exports.pedidos = async (req, res) => {
       ORDER BY p.fecha_pedido DESC
     `)
 
+    const pedidosFormateados = pedidos.map((p) => ({
+      ...p,
+      total: Number(p.total) || 0,
+    }))
+
     res.render("admin/pedidos", {
       title: "Gestión de Pedidos",
-      pedidos,
+      pedidos: pedidosFormateados,
       usuario: req.session.usuario,
     })
   } catch (error) {

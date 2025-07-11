@@ -1,24 +1,22 @@
-const db = require("../config/db");
+const db = require("../config/db")
 
-exports.vistaChat = (req, res) => {
-  const usuario = req.session.usuario;
-  if (!usuario) return res.redirect("/auth/login");
+exports.renderChat = (req, res) => {
+  if (!req.session.usuario) return res.redirect("/auth/login")
 
-  exports.renderChat = (req, res) => {
-    if (!req.session.usuario) return res.redirect("/auth/login");
+  res.render("chat/chat", {
+    title: "Chat de Soporte",
+    usuario: req.session.usuario,
+    cliente: res.locals.cliente || null,
+  })
+}
 
-    res.render("chat/chat", {
-      usuario: req.session.usuario,
-      title: "Soporte en línea",
-    });
-  };
-  exports.guardarMensaje = (usuario, mensaje, rol) => {
-    db.query(
+exports.guardarMensaje = async (usuarioId, mensaje, rol) => {
+  try {
+    await db.query(
       "INSERT INTO mensajes_soporte (usuario_id, mensaje, emisor_rol) VALUES (?, ?, ?)",
-      [usuario.id, mensaje, rol],
-      (err) => {
-        if (err) console.error("❌ Error al guardar mensaje:", err);
-      }
-    );
-  };
-};
+      [usuarioId, mensaje, rol],
+    )
+  } catch (err) {
+    console.error("❌ Error al guardar mensaje:", err)
+  }
+}

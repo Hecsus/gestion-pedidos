@@ -1,3 +1,6 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
 <!-- 💬 Chat de soporte en tiempo real -->
 <div class="container py-4">
     <div class="row justify-content-center">
@@ -5,7 +8,12 @@
             <div class="card">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="bi bi-chat-dots"></i> Chat de Soporte
+                        <i class="bi bi-chat-dots"></i>
+                        <% if (usuario.rol === 'admin' && cliente) { %>
+                          Chat con <%= cliente.nombre %>
+                        <% } else { %>
+                          Chat de Soporte
+                        <% } %>
                         <span class="badge bg-success ms-2" id="statusIndicator">En línea</span>
                     </h4>
                 </div>
@@ -49,12 +57,19 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 // 🔌 Configuración de Socket.IO
-const socket = io();
+const roomUserId = <%= usuario.rol === 'admin' ? (cliente ? cliente.id : 'null') : usuario.id %>;
+const socket = io({ query: { roomUserId } });
 const chatContainer = document.getElementById('chat-container');
 const chatForm = document.getElementById('chatForm');
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusIndicator = document.getElementById('statusIndicator');
+
+// Cargar mensajes anteriores
+const messagesUrl = '/api/mensajes<%= usuario.rol === 'admin' && cliente ? '?usuario_id=' + cliente.id : '' %>';
+fetch(messagesUrl)
+  .then(r => r.json())
+  .then(data => { data.forEach(addMessageToChat); });
 
 // 👤 Información del usuario actual
 const currentUser = {
@@ -73,7 +88,8 @@ chatForm.addEventListener('submit', (e) => {
     socket.emit('mensaje', {
         usuario: currentUser.nombre,
         mensaje: mensaje,
-        rol: currentUser.rol
+        rol: currentUser.rol,
+        para: roomUserId
     });
     
     // Limpiar input
@@ -155,3 +171,4 @@ messageInput.addEventListener('keypress', (e) => {
     }
 });
 </script>
+<%- include('../partials/footer') %>
