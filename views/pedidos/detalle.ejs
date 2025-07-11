@@ -1,0 +1,106 @@
+<!-- 📋 Detalle de un pedido específico -->
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Header del pedido -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3><i class="bi bi-receipt"></i> Pedido #<%= pedido.id %></h3>
+                    <div>
+                        <span class="badge bg-<%= pedido.estado === 'terminado' ? 'success' : pedido.estado === 'en_proceso' ? 'info' : pedido.estado === 'entregado' ? 'primary' : 'warning' %> me-2">
+                          <%= pedido.estado === 'en_proceso' ? 'En Proceso' : pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1) %>
+                        </span>
+                        <span class="badge bg-<%= pedido.estado_pago === 'Pagado' ? 'success' : pedido.estado_pago === 'Pagado parcial' ? 'info' : 'warning' %>">
+                          <%= pedido.estado_pago %>
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar"></i> Fecha:</strong> 
+                                <%= new Date(pedido.fecha_pedido).toLocaleDateString('es-ES', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                }) %>
+                            </p>
+                            <p><strong><i class="bi bi-person"></i> Cliente:</strong> <%= pedido.cliente_nombre %></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-envelope"></i> Email:</strong> <%= pedido.cliente_email %></p>
+                            <p><strong><i class="bi bi-currency-euro"></i> Total:</strong> 
+                                <span class="text-primary fs-5">€<%= pedido.total.toFixed(2) %></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detalles de productos -->
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-box"></i> Productos del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <% if (detalles && detalles.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% detalles.forEach(detalle => { %>
+                                        <tr>
+                                            <td>
+                                                <strong><%= detalle.producto_nombre %></strong>
+                                                <% if (detalle.producto_descripcion) { %>
+                                                    <br><small class="text-muted"><%= detalle.producto_descripcion %></small>
+                                                <% } %>
+                                            </td>
+                                            <td>€<%= detalle.precio_unitario.toFixed(2) %></td>
+                                            <td>
+                                                <span class="badge bg-primary"><%= detalle.cantidad %></span>
+                                            </td>
+                                            <td class="fw-bold">€<%= (detalle.precio_unitario * detalle.cantidad).toFixed(2) %></td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-primary">
+                                        <th colspan="3">Total del Pedido:</th>
+                                        <th>€<%= pedido.total.toFixed(2) %></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> 
+                            No se encontraron detalles para este pedido.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="mt-4 text-center">
+                <a href="/pedidos" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Volver a Mis Pedidos
+                </a>
+                <% if (pedido.estado === 'pendiente') { %>
+                    <button class="btn btn-warning" onclick="alert('Funcionalidad de cancelación pendiente de implementar')">
+                        <i class="bi bi-x-circle"></i> Cancelar Pedido
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

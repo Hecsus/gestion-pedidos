@@ -1,0 +1,174 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<!-- 💬 Chat de soporte en tiempo real -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-chat-dots"></i>
+                        <% if (usuario.rol === 'admin' && cliente) { %>
+                          Chat con <%= cliente.nombre %>
+                        <% } else { %>
+                          Chat de Soporte
+                        <% } %>
+                        <span class="badge bg-success ms-2" id="statusIndicator">En línea</span>
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Área de mensajes -->
+                    <div id="chat-container" class="p-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+                        <div class="text-center text-muted py-3">
+                            <i class="bi bi-chat-square-dots" style="font-size: 2rem;"></i>
+                            <p class="mt-2">¡Bienvenido al chat de soporte!</p>
+                            <p class="small">Escribe tu mensaje para comenzar la conversación.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <!-- Formulario de envío -->
+                    <form id="chatForm" class="d-flex gap-2">
+                        <input 
+                            type="text" 
+                            id="messageInput" 
+                            class="form-control" 
+                            placeholder="Escribe tu mensaje aquí..."
+                            maxlength="500"
+                            autocomplete="off"
+                            required
+                        >
+                        <button type="submit" class="btn btn-primary" id="sendButton">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </form>
+                    <div class="form-text mt-2">
+                        <i class="bi bi-info-circle"></i> 
+                        Conectado como: <strong><%= usuario.nombre %></strong> (<%= usuario.rol %>)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Socket.IO y JavaScript del chat -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+// 🔌 Configuración de Socket.IO
+const roomUserId = <%= usuario.rol === 'admin' ? (cliente ? cliente.id : 'null') : usuario.id %>;
+const socket = io({ query: { roomUserId } });
+const chatContainer = document.getElementById('chat-container');
+const chatForm = document.getElementById('chatForm');
+const messageInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendButton');
+const statusIndicator = document.getElementById('statusIndicator');
+
+// Cargar mensajes anteriores
+const messagesUrl = '/api/mensajes<%= usuario.rol === 'admin' && cliente ? '?usuario_id=' + cliente.id : '' %>';
+fetch(messagesUrl)
+  .then(r => r.json())
+  .then(data => { data.forEach(addMessageToChat); });
+
+// 👤 Información del usuario actual
+const currentUser = {
+    nombre: '<%= usuario.nombre %>',
+    rol: '<%= usuario.rol %>'
+};
+
+// 📨 Enviar mensaje
+chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const mensaje = messageInput.value.trim();
+    if (mensaje === '') return;
+    
+    // Enviar mensaje al servidor
+    socket.emit('mensaje', {
+        usuario: currentUser.nombre,
+        mensaje: mensaje,
+        rol: currentUser.rol,
+        para: roomUserId
+    });
+    
+    // Limpiar input
+    messageInput.value = '';
+    messageInput.focus();
+});
+
+// 📥 Recibir mensajes
+socket.on('mensaje', (data) => {
+    addMessageToChat(data);
+});
+
+// 🔗 Eventos de conexión
+socket.on('connect', () => {
+    statusIndicator.textContent = 'En línea';
+    statusIndicator.className = 'badge bg-success ms-2';
+    console.log('Conectado al chat');
+});
+
+socket.on('disconnect', () => {
+    statusIndicator.textContent = 'Desconectado';
+    statusIndicator.className = 'badge bg-danger ms-2';
+    console.log('Desconectado del chat');
+});
+
+// 💬 Función para agregar mensaje al chat
+function addMessageToChat(data) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'mb-3';
+    
+    const isOwnMessage = data.usuario === currentUser.nombre;
+    const messageClass = isOwnMessage ? 'chat-message own' : 'chat-message other';
+    
+    const timestamp = data.timestamp || new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    messageDiv.innerHTML = `
+        <div class="${messageClass}">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <strong>${data.usuario}</strong>
+                    ${data.rol ? `<span class="badge bg-secondary ms-1">${data.rol}</span>` : ''}
+                </div>
+                <small class="text-muted">${timestamp}</small>
+            </div>
+            <div class="mt-1">${escapeHtml(data.mensaje)}</div>
+        </div>
+    `;
+    
+    chatContainer.appendChild(messageDiv);
+    
+    // Scroll automático hacia abajo
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // Limpiar mensaje de bienvenida si existe
+    const welcomeMessage = chatContainer.querySelector('.text-center');
+    if (welcomeMessage) {
+        welcomeMessage.remove();
+    }
+}
+
+// 🛡️ Función para escapar HTML y prevenir XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// 🎯 Enfocar input al cargar la página
+messageInput.focus();
+
+// ⌨️ Enviar mensaje con Enter
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit'));
+    }
+});
+</script>
+<%- include('../partials/footer') %>
