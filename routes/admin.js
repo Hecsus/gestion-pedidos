@@ -27,4 +27,9 @@ router.post("/pedidos/:id/estado", adminController.cambiarEstado)
  */
 router.post("/pedidos/:id/pago", adminController.cambiarEstadoPago)
 
+/**
+ * Eliminar un pedido
+ */
+router.post("/pedidos/:id/eliminar", adminController.eliminar) // Borra el pedido y sus detalles
+
 module.exports = router

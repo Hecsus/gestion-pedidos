@@ -142,10 +142,14 @@ function addMessageToChat(data) {
     const isOwnMessage = data.usuario === currentUser.nombre;
     const messageClass = isOwnMessage ? 'chat-message own' : 'chat-message other';
     
-    const timestamp = data.timestamp || new Date().toLocaleTimeString('es-ES', {
+    // Usar la marca de tiempo proporcionada o formatear la de la base de datos
+    const timestamp = data.timestamp || (data.fecha ? new Date(data.fecha).toLocaleTimeString('es-ES', {
         hour: '2-digit',
         minute: '2-digit'
-    });
+    }) : new Date().toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+    }));
     
     messageDiv.innerHTML = `
         <div class="${messageClass}">

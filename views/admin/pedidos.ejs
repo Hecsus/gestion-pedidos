@@ -22,6 +22,11 @@
                 <i class="bi bi-check-circle"></i> Estado de pago actualizado correctamente.
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        <% } else if (query.success === 'eliminado') { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> Pedido eliminado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         <% } else if (query.error) { %>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle"></i> Error al actualizar. Inténtalo de nuevo.
@@ -86,13 +91,16 @@
                                         </small>
                                     </td>
                                     <td class="d-flex gap-1">
-                                        <button class="btn btn-outline-primary btn-sm" onclick="alert('Ver detalles - Funcionalidad pendiente')">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
                                             <input type="hidden" name="estado" value="cancelado">
                                             <button class="btn btn-outline-danger btn-sm" type="submit">
                                                 <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                        <!-- Borrar pedido de la base de datos -->
+                                        <form action="/admin/pedidos/<%= pedido.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar pedido definitivamente?');">
+                                            <button class="btn btn-danger btn-sm" type="submit">
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
                                     </td>

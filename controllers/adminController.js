@@ -17,11 +17,11 @@ exports.dashboard = async (req, res) => {
 
     // Obtener pedidos recientes (ajustado a tu estructura de BD)
     const [pedidosRecientes] = await db.query(`
-      SELECT 
+      SELECT
         p.id,
         p.total,
         p.estado,
-        p.pago_estado,
+        p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
         u.email as cliente_email
@@ -65,7 +65,7 @@ exports.pedidos = async (req, res) => {
         p.id,
         p.total,
         p.estado,
-        p.pago_estado,
+        p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
         u.email as cliente_email,
@@ -80,12 +80,14 @@ exports.pedidos = async (req, res) => {
     const pedidosFormateados = pedidos.map((p) => ({
       ...p,
       total: Number(p.total) || 0,
+      estado_pago: p.estado_pago,
     }))
 
     res.render("admin/pedidos", {
       title: "Gestión de Pedidos",
       pedidos: pedidosFormateados,
       usuario: req.session.usuario,
+      query: req.query,
     })
   } catch (error) {
     console.error("❌ Error al obtener pedidos:", error)
@@ -143,5 +145,23 @@ exports.cambiarEstadoPago = async (req, res) => {
   } catch (error) {
     console.error("❌ Error al cambiar estado de pago:", error)
     res.redirect("/admin/pedidos?error=pago_no_actualizado")
+  }
+}
+
+/**
+ * Eliminar un pedido y sus detalles
+ */
+exports.eliminar = async (req, res) => {
+  try {
+    const { id } = req.params
+    // Borrar primero los detalles para mantener la integridad referencial
+    await db.query('DELETE FROM detalle_pedido WHERE pedido_id = ?', [id])
+    await db.query('DELETE FROM pedidos WHERE id = ?', [id])
+
+    console.log(`✅ Pedido ${id} eliminado`)
+    res.redirect('/admin/pedidos?success=eliminado')
+  } catch (error) {
+    console.error('❌ Error al eliminar pedido:', error)
+    res.redirect('/admin/pedidos?error=no_eliminado')
   }
 }

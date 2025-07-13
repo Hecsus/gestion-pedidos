@@ -12,11 +12,28 @@ router.get("/mensajes", async (req, res) => {
     if (req.session.usuario.rol === "admin" && req.query.usuario_id) {
       userId = req.query.usuario_id
     }
+    // Obtener mensajes junto con el nombre del usuario para formatearlos
     const [mensajes] = await db.query(
-      "SELECT * FROM mensajes_soporte WHERE usuario_id = ? ORDER BY fecha ASC",
+      `SELECT m.mensaje, m.emisor_rol, m.fecha, u.nombre
+       FROM mensajes_soporte m
+       JOIN usuarios u ON m.usuario_id = u.id
+       WHERE m.usuario_id = ?
+       ORDER BY m.fecha ASC`,
       [userId],
     )
-    res.json(mensajes)
+
+    // Formatear la estructura para que coincida con los datos del socket
+    const formateados = mensajes.map((m) => ({
+      usuario: m.emisor_rol === 'admin' ? 'Soporte' : m.nombre,
+      mensaje: m.mensaje,
+      rol: m.emisor_rol,
+      timestamp: new Date(m.fecha).toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    }))
+
+    res.json(formateados)
   } catch (err) {
     console.error("❌ Error obteniendo mensajes:", err)
     res.status(500).json({ error: "Error del servidor" })
