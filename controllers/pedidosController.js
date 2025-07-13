@@ -12,15 +12,17 @@ exports.listar = async (req, res) => {
     // Obtener pedidos con detalles (ajustado a tu estructura)
     const [pedidos] = await db.query(
       `
-      SELECT 
+      SELECT
         p.id,
         p.total,
         p.estado,
         p.pago_estado,
         p.fecha_pedido,
-        COUNT(dp.id) as total_productos
+        COUNT(dp.id) as total_productos,
+        GROUP_CONCAT(CONCAT(pr.nombre, ' x', dp.cantidad) SEPARATOR ', ') AS productos_detalle
       FROM pedidos p
       LEFT JOIN detalle_pedido dp ON p.id = dp.pedido_id
+      LEFT JOIN productos pr ON dp.producto_id = pr.id
       WHERE p.usuario_id = ?
       GROUP BY p.id
       ORDER BY p.fecha_pedido DESC
@@ -32,6 +34,7 @@ exports.listar = async (req, res) => {
     const pedidosFormateados = pedidos.map((pedido) => ({
       ...pedido,
       total: Number(pedido.total) || 0,
+      productos_detalle: pedido.productos_detalle || "",
     }))
 
     res.render("pedidos/lista", {
@@ -244,6 +247,7 @@ exports.verDetalle = async (req, res) => {
       pedido: pedidoFormateado,
       detalles: detallesFormateados,
       usuario: req.session.usuario,
+      query: req.query,
     })
   } catch (error) {
     console.error("❌ Error al obtener detalle del pedido:", error)
@@ -253,5 +257,20 @@ exports.verDetalle = async (req, res) => {
       error: error,
       usuario: req.session.usuario,
     })
+  }
+}
+
+exports.cancelar = async (req, res) => {
+  try {
+    const { id } = req.params
+    const usuarioId = req.session.usuario.id
+    await db.query(
+      "UPDATE pedidos SET estado = 'cancelado' WHERE id = ? AND usuario_id = ?",
+      [id, usuarioId],
+    )
+    res.redirect(`/pedidos/${id}?success=cancelado`)
+  } catch (error) {
+    console.error("❌ Error al cancelar pedido:", error)
+    res.redirect(`/pedidos/${id}?error=cancelar`)
   }
 }

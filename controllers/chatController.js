@@ -7,11 +7,13 @@ exports.renderChat = (req, res) => {
     title: "Chat de Soporte",
     usuario: req.session.usuario,
     cliente: res.locals.cliente || null,
+    clientes: res.locals.clientes || [],
   })
 }
 
 exports.guardarMensaje = async (usuarioId, mensaje, rol) => {
   try {
+    if (!usuarioId) return
     await db.query(
       "INSERT INTO mensajes_soporte (usuario_id, mensaje, emisor_rol) VALUES (?, ?, ?)",
       [usuarioId, mensaje, rol],

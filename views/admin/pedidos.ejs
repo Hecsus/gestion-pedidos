@@ -66,10 +66,11 @@
                                                 <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
                                                 <option value="terminado" <%= pedido.estado === 'terminado' ? 'selected' : '' %>>Terminado</option>
                                                 <option value="entregado" <%= pedido.estado === 'entregado' ? 'selected' : '' %>>Entregado</option>
+                                                <option value="cancelado" <%= pedido.estado === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
                                             </select>
                                         </form>
                                     </td>
-                                    <td>
+                                    <td class="<%= pedido.estado_pago === 'Pagado' ? 'text-success' : pedido.estado_pago === 'Pagado parcial' ? 'text-warning' : 'text-danger' %>">
                                         <form action="/admin/pedidos/<%= pedido.id %>/pago" method="POST" class="d-inline">
                                             <select name="estado_pago" class="form-select form-select-sm" onchange="this.form.submit()">
                                                 <option value="Sin liquidar" <%= pedido.estado_pago === 'Sin liquidar' ? 'selected' : '' %>>Sin liquidar</option>
@@ -84,10 +85,16 @@
                                             <%= new Date(pedido.fecha_pedido).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) %>
                                         </small>
                                     </td>
-                                    <td>
+                                    <td class="d-flex gap-1">
                                         <button class="btn btn-outline-primary btn-sm" onclick="alert('Ver detalles - Funcionalidad pendiente')">
                                             <i class="bi bi-eye"></i>
                                         </button>
+                                        <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
+                                            <input type="hidden" name="estado" value="cancelado">
+                                            <button class="btn btn-outline-danger btn-sm" type="submit">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <% }) %>

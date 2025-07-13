@@ -27,4 +27,7 @@ router.post("/crear", pedidosController.crear)
  */
 router.get("/:id", pedidosController.verDetalle)
 
+/** Cancelar pedido */
+router.post("/:id/cancelar", pedidosController.cancelar)
+
 module.exports = router

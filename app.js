@@ -98,14 +98,18 @@ const chatController = require("./controllers/chatController")
 // 💬 Configurar Socket.IO para chat en tiempo real
 io.on("connection", (socket) => {
   const usuario = socket.request.session?.usuario
-  const roomUserId = socket.handshake.query.roomUserId || usuario?.id
+  let roomUserId = socket.handshake.query.roomUserId
+  if (!roomUserId || roomUserId === "null") {
+    roomUserId = usuario?.id
+  }
   if (roomUserId) {
     socket.join(`user_${roomUserId}`)
   }
   console.log("👤 Usuario conectado al chat")
 
   socket.on("mensaje", async (data) => {
-    const destino = data.para || roomUserId
+    let destino = data.para
+    if (!destino || destino === "null") destino = roomUserId
     const payload = {
       usuario: usuario?.nombre || "Anónimo",
       mensaje: data.mensaje,
@@ -118,8 +122,9 @@ io.on("connection", (socket) => {
 
     if (destino) io.to(`user_${destino}`).emit("mensaje", payload)
 
-    if (usuario) {
-      chatController.guardarMensaje(destino || usuario.id, data.mensaje, payload.rol)
+    if (usuario && destino) {
+      const userId = parseInt(destino, 10) || usuario.id
+      chatController.guardarMensaje(userId, data.mensaje, payload.rol)
     }
   })
 

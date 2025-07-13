@@ -18,6 +18,17 @@
                     </h4>
                 </div>
                 <div class="card-body p-0">
+                    <% if (usuario.rol === 'admin' && clientes.length > 0 && !cliente) { %>
+                        <div class="p-3 border-bottom">
+                            <label for="clienteSelect" class="form-label">Selecciona un cliente</label>
+                            <select id="clienteSelect" class="form-select" onchange="if(this.value) window.location='/chat?cliente=' + this.value;">
+                                <option value="">-- Elegir cliente --</option>
+                                <% clientes.forEach(c => { %>
+                                    <option value="<%= c.id %>"><%= c.nombre %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    <% } %>
                     <!-- Área de mensajes -->
                     <div id="chat-container" class="p-3" style="height: 400px; overflow-y: auto; background-color: #f8f9fa;">
                         <div class="text-center text-muted py-3">
@@ -65,11 +76,19 @@ const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusIndicator = document.getElementById('statusIndicator');
 
+const isAdminWithoutClient = '<%= usuario.rol %>' === 'admin' && roomUserId === 'null';
+if (isAdminWithoutClient) {
+  messageInput.disabled = true;
+  sendButton.disabled = true;
+}
+
 // Cargar mensajes anteriores
 const messagesUrl = '/api/mensajes<%= usuario.rol === 'admin' && cliente ? '?usuario_id=' + cliente.id : '' %>';
-fetch(messagesUrl)
-  .then(r => r.json())
-  .then(data => { data.forEach(addMessageToChat); });
+if (!isAdminWithoutClient) {
+  fetch(messagesUrl)
+    .then(r => r.json())
+    .then(data => { data.forEach(addMessageToChat); });
+}
 
 // 👤 Información del usuario actual
 const currentUser = {
