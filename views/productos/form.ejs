@@ -21,6 +21,7 @@
                     <% } %>
 
                     <form action="/productos/<%= accion === 'editar' ? producto.id + '/editar' : 'crear' %>" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <div class="row">
                             <div class="col-md-8">
                                 <div class="mb-3">

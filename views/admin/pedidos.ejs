@@ -66,6 +66,7 @@
                                     <td class="fw-bold text-primary">€<%= pedido.total.toFixed(2) %></td>
                                     <td>
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" class="d-inline">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                             <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
                                                 <option value="recibido" <%= pedido.estado === 'recibido' ? 'selected' : '' %>>Recibido</option>
                                                 <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
@@ -77,6 +78,7 @@
                                     </td>
                                     <td class="<%= pedido.estado_pago === 'Pagado' ? 'text-success' : pedido.estado_pago === 'Pagado parcial' ? 'text-warning' : 'text-danger' %>">
                                         <form action="/admin/pedidos/<%= pedido.id %>/pago" method="POST" class="d-inline">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                             <select name="estado_pago" class="form-select form-select-sm" onchange="this.form.submit()">
                                                 <option value="Sin liquidar" <%= pedido.estado_pago === 'Sin liquidar' ? 'selected' : '' %>>Sin liquidar</option>
                                                 <option value="Pagado parcial" <%= pedido.estado_pago === 'Pagado parcial' ? 'selected' : '' %>>Pagado parcial</option>
@@ -92,6 +94,7 @@
                                     </td>
                                     <td class="d-flex gap-1">
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                             <input type="hidden" name="estado" value="cancelado">
                                             <button class="btn btn-outline-danger btn-sm" type="submit">
                                                 <i class="bi bi-x-circle"></i>
@@ -99,6 +102,7 @@
                                         </form>
                                         <!-- Borrar pedido de la base de datos -->
                                         <form action="/admin/pedidos/<%= pedido.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar pedido definitivamente?');">
+                                            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                             <button class="btn btn-danger btn-sm" type="submit">
                                                 <i class="bi bi-trash"></i>
                                             </button>

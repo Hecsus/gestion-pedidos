@@ -4,6 +4,8 @@ require("dotenv").config()
 // 📦 Importar dependencias necesarias
 const express = require("express")
 const session = require("express-session")
+const helmet = require("helmet")
+const csurf = require("csurf")
 const path = require("path")
 const logger = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -16,6 +18,9 @@ const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
 
+// 🛡️ Añadir cabeceras de seguridad por defecto
+app.use(helmet())
+
 // 💾 Guardar instancia de Socket.IO en la app para usarla en otros archivos
 app.set("io", io)
 
@@ -25,17 +30,13 @@ const sessionMiddleware = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Cambiar a true en producción con HTTPS
+    secure: process.env.NODE_ENV === "production", // Solo cookies seguras en producción
+    httpOnly: true, // No accesible desde JS del cliente
+    sameSite: "lax", // Protege de CSRF básico
     maxAge: 24 * 60 * 60 * 1000, // 24 horas
   },
 })
 app.use(sessionMiddleware)
-
-// Hacer disponible el usuario en todas las vistas
-app.use((req, res, next) => {
-  res.locals.usuario = req.session.usuario || null
-  next()
-})
 
 // 🛠️ Middlewares básicos de Express
 app.use(logger("dev")) // Log de peticiones HTTP
@@ -43,6 +44,28 @@ app.use(express.json()) // Parsear JSON en el body
 // Usar extended:true para permitir estructuras anidadas en formularios
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser()) // Parsear cookies
+// 🛡️ Protección CSRF
+app.use(csurf())
+
+// Hacer disponible usuario y token CSRF en todas las vistas
+app.use((req, res, next) => {
+  res.locals.usuario = req.session.usuario || null
+  res.locals.csrfToken = req.csrfToken()
+  next()
+})
+
+// Manejar errores de CSRF de forma amigable
+app.use((err, req, res, next) => {
+  if (err.code === "EBADCSRFTOKEN") {
+    return res.status(403).render("error", {
+      title: "Error de seguridad",
+      message: "Formulario caducado o inválido",
+      error: err,
+      usuario: req.session.usuario || null,
+    })
+  }
+  next(err)
+})
 
 // 🌐 Servir archivos estáticos (CSS, JS, imágenes) - IMPORTANTE: antes de las rutas
 app.use(express.static(path.join(__dirname, "public")))

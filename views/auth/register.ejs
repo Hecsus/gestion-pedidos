@@ -49,6 +49,7 @@
 
                             <!-- Formulario de registro -->
                             <form action="/auth/register" method="POST" novalidate>
+                                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                                 <div class="mb-3">
                                     <label for="nombre" class="form-label">
                                         <i class="bi bi-person"></i> Nombre Completo
