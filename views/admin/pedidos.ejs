@@ -1,0 +1,122 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<!-- 📋 Gestión de pedidos para administradores -->
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-list-check"></i> Gestión de Pedidos</h2>
+        <a href="/admin" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+
+    <!-- Mensajes de éxito/error -->
+    <% if (typeof query !== 'undefined') { %>
+        <% if (query.success === 'estado_actualizado') { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> Estado del pedido actualizado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } else if (query.success === 'pago_actualizado') { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> Estado de pago actualizado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } else if (query.success === 'eliminado') { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle"></i> Pedido eliminado correctamente.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } else if (query.error) { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle"></i> Error al actualizar. Inténtalo de nuevo.
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+    <% } %>
+
+    <% if (pedidos && pedidos.length > 0) { %>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Cliente</th>
+                                <th>Productos</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Pago</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% pedidos.forEach(pedido => { %>
+                                <tr>
+                                    <td><strong>#<%= pedido.id %></strong></td>
+                                    <td>
+                                        <strong><%= pedido.cliente_nombre %></strong>
+                                        <br><small class="text-muted"><%= pedido.cliente_email %></small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info"><%= pedido.total_productos %> items</span>
+                                    </td>
+                                    <td class="fw-bold text-primary">€<%= pedido.total.toFixed(2) %></td>
+                                    <td>
+                                        <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" class="d-inline">
+                                            <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="recibido" <%= pedido.estado === 'recibido' ? 'selected' : '' %>>Recibido</option>
+                                                <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
+                                                <option value="terminado" <%= pedido.estado === 'terminado' ? 'selected' : '' %>>Terminado</option>
+                                                <option value="entregado" <%= pedido.estado === 'entregado' ? 'selected' : '' %>>Entregado</option>
+                                                <option value="cancelado" <%= pedido.estado === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td class="<%= pedido.estado_pago === 'Pagado' ? 'text-success' : pedido.estado_pago === 'Pagado parcial' ? 'text-warning' : 'text-danger' %>">
+                                        <form action="/admin/pedidos/<%= pedido.id %>/pago" method="POST" class="d-inline">
+                                            <select name="estado_pago" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="Sin liquidar" <%= pedido.estado_pago === 'Sin liquidar' ? 'selected' : '' %>>Sin liquidar</option>
+                                                <option value="Pagado parcial" <%= pedido.estado_pago === 'Pagado parcial' ? 'selected' : '' %>>Pagado parcial</option>
+                                                <option value="Pagado" <%= pedido.estado_pago === 'Pagado' ? 'selected' : '' %>>Pagado</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <%= new Date(pedido.fecha_pedido).toLocaleDateString('es-ES') %>
+                                        <br><small class="text-muted">
+                                            <%= new Date(pedido.fecha_pedido).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) %>
+                                        </small>
+                                    </td>
+                                    <td class="d-flex gap-1">
+                                        <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
+                                            <input type="hidden" name="estado" value="cancelado">
+                                            <button class="btn btn-outline-danger btn-sm" type="submit">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </form>
+                                        <!-- Borrar pedido de la base de datos -->
+                                        <form action="/admin/pedidos/<%= pedido.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar pedido definitivamente?');">
+                                            <button class="btn btn-danger btn-sm" type="submit">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="text-center py-5">
+            <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+            <h4 class="text-muted mt-3">No hay pedidos registrados</h4>
+            <p class="text-muted">Los pedidos aparecerán aquí cuando los clientes realicen compras.</p>
+        </div>
+    <% } %>
+</div>
+<%- include('../partials/footer') %>
