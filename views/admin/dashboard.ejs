@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Gestión de Pedidos</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam"></i> Gestión de Pedidos
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/pedidos">
+                            <i class="bi bi-list-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/productos">
+                            <i class="bi bi-box"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chat">
+                            <i class="bi bi-chat-dots"></i> Soporte
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= usuario.nombre %>
+                            <span class="badge bg-secondary"><%= usuario.rol %></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/auth/logout">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <!-- 👑 Dashboard del administrador -->
+        <div class="container py-4">
+            <h2 class="mb-4"><i class="bi bi-speedometer2"></i> Panel de Administración</h2>
+
+            <!-- Estadísticas generales -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-3">
+                    <div class="card stats-card text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-bag-check" style="font-size: 2.5rem;"></i>
+                            <div class="stats-number"><%= stats.total_pedidos %></div>
+                            <div>Total Pedidos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people" style="font-size: 2.5rem;"></i>
+                            <div class="stats-number"><%= stats.total_clientes %></div>
+                            <div>Clientes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-box" style="font-size: 2.5rem;"></i>
+                            <div class="stats-number"><%= stats.total_productos %></div>
+                            <div>Productos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body text-center">
+                            <i class="bi bi-currency-euro" style="font-size: 2.5rem;"></i>
+                            <div class="stats-number">€<%= stats.ingresos_totales.toFixed(0) %></div>
+                            <div>Ingresos Totales</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesos rápidos -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-list-check text-primary" style="font-size: 3rem;"></i>
+                            <h5 class="card-title mt-3">Gestionar Pedidos</h5>
+                            <p class="card-text">Ver y administrar todos los pedidos del sistema</p>
+                            <a href="/admin/pedidos" class="btn btn-primary">
+                                <i class="bi bi-arrow-right"></i> Ir a Pedidos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-box-seam text-success" style="font-size: 3rem;"></i>
+                            <h5 class="card-title mt-3">Gestionar Productos</h5>
+                            <p class="card-text">Administrar el catálogo de productos</p>
+                            <a href="/productos" class="btn btn-success">
+                                <i class="bi bi-arrow-right"></i> Ir a Productos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-chat-dots text-info" style="font-size: 3rem;"></i>
+                            <h5 class="card-title mt-3">Soporte</h5>
+                            <p class="card-text">Atender consultas de clientes</p>
+                            <a href="/chat" class="btn btn-info">
+                                <i class="bi bi-arrow-right"></i> Ir a Chat
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedidos recientes -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="bi bi-clock-history"></i> Pedidos Recientes</h5>
+                    <a href="/admin/pedidos" class="btn btn-outline-primary btn-sm">Ver Todos</a>
+                </div>
+                <div class="card-body">
+                    <% if (pedidosRecientes && pedidosRecientes.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% pedidosRecientes.forEach(pedido => { %>
+                                        <tr>
+                                            <td><strong>#<%= pedido.id %></strong></td>
+                                            <td>
+                                                <%= pedido.cliente_nombre %>
+                                                <br><small class="text-muted"><%= pedido.cliente_email %></small>
+                                            </td>
+                                            <td class="fw-bold text-primary">€<%= Number(pedido.total).toFixed(2) %></td>
+                                            <td>
+                                                <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'danger' : 'secondary' %>">
+                                                    <%= pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1) %>
+                                                </span>
+                                            </td>
+                                            <td><%= new Date(pedido.fecha_pedido).toLocaleDateString('es-ES') %></td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-2">No hay pedidos recientes</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">© 2025 Sistema de Gestión de Pedidos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
