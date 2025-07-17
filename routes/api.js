@@ -15,10 +15,10 @@ router.get("/mensajes", async (req, res) => {
     // Obtener mensajes junto con el nombre del usuario para formatearlos
     const [mensajes] = await db.query(
       `SELECT m.mensaje, m.emisor_rol, m.fecha, u.nombre
-       FROM mensajes_soporte m
-       JOIN usuarios u ON m.usuario_id = u.id
-       WHERE m.usuario_id = ?
-       ORDER BY m.fecha ASC`,
+        FROM mensajes_soporte m
+        JOIN usuarios u ON m.usuario_id = u.id
+        WHERE m.usuario_id = ?
+        ORDER BY m.fecha ASC`,
       [userId],
     )
 
