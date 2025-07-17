@@ -49,6 +49,7 @@
                                 <th>Estado</th>
                                 <th>Pago</th>
                                 <th>Fecha</th>
+                                <th>Cancelación</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -90,6 +91,11 @@
                                         <br><small class="text-muted">
                                             <%= new Date(pedido.fecha_pedido).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}) %>
                                         </small>
+                                    </td>
+                                    <td>
+                                        <% if (pedido.cancelacion_solicitada) { %>
+                                            <span class="badge bg-warning text-dark">Solicitada</span>
+                                        <% } %>
                                     </td>
                                     <td class="d-flex gap-1">
                                         <!-- Borrar pedido de la base de datos -->

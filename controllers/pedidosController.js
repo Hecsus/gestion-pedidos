@@ -16,6 +16,7 @@ exports.listar = async (req, res) => {
         p.id,
         p.total,
         p.estado,
+        p.cancelacion_solicitada,
         p.pago_estado,
         p.fecha_pedido,
         COUNT(dp.id) as total_productos,
@@ -35,6 +36,7 @@ exports.listar = async (req, res) => {
       ...pedido,
       total: Number(pedido.total) || 0,
       productos_detalle: pedido.productos_detalle || "",
+      cancelacion_solicitada: Boolean(pedido.cancelacion_solicitada),
     }))
 
     res.render("pedidos/lista", {
@@ -197,8 +199,8 @@ exports.verDetalle = async (req, res) => {
     // Obtener pedido con detalles
     const [pedido] = await db.query(
       `
-      SELECT 
-        p.*,
+      SELECT
+        p.*, p.cancelacion_solicitada,
         u.nombre as cliente_nombre,
         u.email as cliente_email
       FROM pedidos p
@@ -235,6 +237,7 @@ exports.verDetalle = async (req, res) => {
     const pedidoFormateado = {
       ...pedido[0],
       total: Number(pedido[0].total) || 0,
+      cancelacion_solicitada: Boolean(pedido[0].cancelacion_solicitada),
     }
 
     const detallesFormateados = detalles.map((detalle) => ({
@@ -265,10 +268,10 @@ exports.cancelar = async (req, res) => {
     const { id } = req.params
     const usuarioId = req.session.usuario.id
     await db.query(
-      "UPDATE pedidos SET estado = 'cancelado' WHERE id = ? AND usuario_id = ?",
+      "UPDATE pedidos SET cancelacion_solicitada = 1 WHERE id = ? AND usuario_id = ?",
       [id, usuarioId],
     )
-    res.redirect(`/pedidos/${id}?success=cancelado`)
+    res.redirect(`/pedidos/${id}?success=cancel_solicitada`)
   } catch (error) {
     console.error("❌ Error al cancelar pedido:", error)
     res.redirect(`/pedidos/${id}?error=cancelar`)

@@ -41,8 +41,13 @@
             </li>
           <% } %>
           <li class="nav-item">
-            <a class="nav-link" href="/chat">
+            <a class="nav-link position-relative" href="/chat">
               <i class="bi bi-chat-dots"></i> Soporte
+              <% if (typeof pendingChats !== 'undefined' && pendingChats > 0 && usuario.rol === 'admin') { %>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <%= pendingChats %>
+                </span>
+              <% } %>
             </a>
           </li>
         <% } %>

@@ -6,9 +6,9 @@
     <div class="row">
         <div class="col-lg-8 mx-auto">
             <!-- Header del pedido -->
-            <% if (query && query.success === 'cancelado') { %>
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <i class="bi bi-info-circle"></i> Pedido cancelado.
+            <% if (query && query.success === 'cancel_solicitada') { %>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle"></i> Solicitud de cancelación enviada.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <% } %>
@@ -104,12 +104,14 @@
                 <a href="/pedidos" class="btn btn-secondary">
                     <i class="bi bi-arrow-left"></i> Volver a Mis Pedidos
                 </a>
-                <% if (pedido.estado === 'recibido' || pedido.estado === 'pendiente') { %>
-                    <form action="/pedidos/<%= pedido.id %>/cancelar" method="POST" class="d-inline" onsubmit="return confirm('¿Cancelar pedido?');">
+                <% if ((pedido.estado === 'recibido' || pedido.estado === 'pendiente') && !pedido.cancelacion_solicitada) { %>
+                    <form action="/pedidos/<%= pedido.id %>/cancelar" method="POST" class="d-inline" onsubmit="return confirm('¿Solicitar cancelación de este pedido?');">
                         <button class="btn btn-warning">
-                            <i class="bi bi-x-circle"></i> Cancelar Pedido
+                            <i class="bi bi-x-circle"></i> Solicitar Cancelación
                         </button>
                     </form>
+                <% } else if (pedido.cancelacion_solicitada) { %>
+                    <span class="badge bg-warning text-dark">Cancelación solicitada</span>
                 <% } %>
             </div>
         </div>

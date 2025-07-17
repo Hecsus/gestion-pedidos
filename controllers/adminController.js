@@ -61,10 +61,11 @@ exports.dashboard = async (req, res) => {
 exports.pedidos = async (req, res) => {
   try {
     const [pedidos] = await db.query(`
-      SELECT 
+      SELECT
         p.id,
         p.total,
         p.estado,
+        p.cancelacion_solicitada,
         p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
@@ -81,6 +82,7 @@ exports.pedidos = async (req, res) => {
       ...p,
       total: Number(p.total) || 0,
       estado_pago: p.estado_pago,
+      cancelacion_solicitada: Boolean(p.cancelacion_solicitada),
     }))
 
     res.render("admin/pedidos", {
@@ -123,7 +125,10 @@ exports.cambiarEstado = async (req, res) => {
       return res.status(400).json({ error: "Estado no válido" })
     }
 
-    await db.query("UPDATE pedidos SET estado = ? WHERE id = ?", [estado, id])
+    await db.query(
+      "UPDATE pedidos SET estado = ?, cancelacion_solicitada = IF(?='cancelado', 0, cancelacion_solicitada) WHERE id = ?",
+      [estado, estado, id],
+    )
 
     console.log(`✅ Estado del pedido ${id} cambiado a: ${estado}`)
     res.redirect("/admin/pedidos?success=estado_actualizado")

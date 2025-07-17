@@ -11,6 +11,7 @@ const cookieParser = require("cookie-parser")
 const createError = require("http-errors")
 const http = require("http")
 const { Server } = require("socket.io")
+const pendingMessages = require("./middlewares/pendingMessages")
 
 // 🏗️ Crear aplicación Express
 const app = express()
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null
   next()
 })
+app.use(pendingMessages)
 
 // 🌐 Servir archivos estáticos (CSS, JS, imágenes) - IMPORTANTE: antes de las rutas
 app.use(express.static(path.join(__dirname, "public")))
