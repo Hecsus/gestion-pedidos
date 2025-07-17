@@ -67,6 +67,7 @@
                                     <td>
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" class="d-inline">
                                             <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                <option value="pendiente" <%= pedido.estado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
                                                 <option value="recibido" <%= pedido.estado === 'recibido' ? 'selected' : '' %>>Recibido</option>
                                                 <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
                                                 <option value="terminado" <%= pedido.estado === 'terminado' ? 'selected' : '' %>>Terminado</option>
@@ -91,12 +92,6 @@
                                         </small>
                                     </td>
                                     <td class="d-flex gap-1">
-                                        <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
-                                            <input type="hidden" name="estado" value="cancelado">
-                                            <button class="btn btn-outline-danger btn-sm" type="submit">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </form>
                                         <!-- Borrar pedido de la base de datos -->
                                         <form action="/admin/pedidos/<%= pedido.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar pedido definitivamente?');">
                                             <button class="btn btn-danger btn-sm" type="submit">

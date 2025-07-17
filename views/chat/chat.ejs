@@ -68,7 +68,10 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 // 🔌 Configuración de Socket.IO
+// ID de la sala de chat. Para un cliente es su propio ID y para un admin es el
+// ID del cliente seleccionado. Esto permite que ambos se unan a la misma sala.
 const roomUserId = <%= usuario.rol === 'admin' ? (cliente ? cliente.id : 'null') : usuario.id %>;
+// Conectamos con el servidor pasando la sala a la que queremos unirnos
 const socket = io({ query: { roomUserId } });
 const chatContainer = document.getElementById('chat-container');
 const chatForm = document.getElementById('chatForm');
@@ -79,12 +82,17 @@ const partnerId = <%= usuario.rol === 'admin' && cliente ? cliente.id : 'null' %
 const isAdmin = '<%= usuario.rol %>' === 'admin';
 
 const isAdminWithoutClient = '<%= usuario.rol %>' === 'admin' && roomUserId === 'null';
+// Si el admin aún no ha elegido un cliente se deshabilita el envío de mensajes
+// hasta que seleccione uno.
 if (isAdminWithoutClient) {
   messageInput.disabled = true;
   sendButton.disabled = true;
 }
 
 // Cargar mensajes anteriores
+// Endpoint para obtener los mensajes históricos de la conversación. Si el
+// usuario es administrador y ha seleccionado un cliente, se indican los mensajes
+// de ese cliente concreto.
 const messagesUrl = '/api/mensajes<%= usuario.rol === 'admin' && cliente ? '?usuario_id=' + cliente.id : '' %>';
 if (!isAdminWithoutClient) {
   fetch(messagesUrl)
@@ -125,6 +133,7 @@ socket.on('mensaje', (data) => {
 
 // 🔗 Eventos de conexión
 function updateStatus(online) {
+    // Cambiamos el indicador visual según si la otra persona está conectada
     statusIndicator.textContent = online ? 'En línea' : 'Desconectado';
     statusIndicator.className = online ? 'badge bg-success ms-2' : 'badge bg-danger ms-2';
 }

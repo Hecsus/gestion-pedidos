@@ -156,7 +156,10 @@ exports.logout = (req, res) => {
       console.error("❌ Error al cerrar sesión:", err)
     } else {
       console.log(`✅ Sesión cerrada: ${usuario?.email || "usuario"}`)
+      // Eliminar cookie de sesión en el cliente para asegurar el cierre
+      res.clearCookie("connect.sid")
     }
+    // Redirigir a la página principal
     res.redirect("/")
   })
 }

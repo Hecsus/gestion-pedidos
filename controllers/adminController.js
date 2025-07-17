@@ -108,7 +108,16 @@ exports.cambiarEstado = async (req, res) => {
     const { id } = req.params
     const { estado } = req.body
 
-    const estadosValidos = ["recibido", "en_proceso", "terminado", "entregado", "cancelado"]
+    // Estados permitidos para los pedidos. Incluimos "pendiente" que es el estado inicial
+    // cuando un cliente crea un pedido.
+    const estadosValidos = [
+      "pendiente",
+      "recibido",
+      "en_proceso",
+      "terminado",
+      "entregado",
+      "cancelado",
+    ]
 
     if (!estadosValidos.includes(estado)) {
       return res.status(400).json({ error: "Estado no válido" })

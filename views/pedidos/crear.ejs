@@ -48,13 +48,14 @@
                                                     </span>
                                                 </td>
                                                 <td>
-                                                    <input 
-                                                        type="number" 
-                                                        name="productos[<%= index %>][cantidad]" 
-                                                        class="form-control cantidad-input" 
-                                                        min="0" 
-                                                        max="<%= producto.stock %>" 
+                                                    <input
+                                                        type="number"
+                                                        name="productos[<%= index %>][cantidad]"
+                                                        class="form-control cantidad-input"
+                                                        min="0"
+                                                        max="<%= producto.stock %>"
                                                         value="0"
+                                                        step="1"
                                                         style="width: 80px;"
                                                     >
                                                     <input type="hidden" name="productos[<%= index %>][id]" value="<%= producto.id %>">
