@@ -18,7 +18,6 @@
                     <% } %>
 
                     <form action="/pedidos/crear" method="POST" id="formPedido">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                         <h5 class="mb-3">Selecciona los productos:</h5>
                         
                         <% if (productos && productos.length > 0) { %>

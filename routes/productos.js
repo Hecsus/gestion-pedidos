@@ -54,10 +54,6 @@ router.post(
 /**
  * Eliminar producto
  */
-router.post(
-  "/:id/eliminar",
-  [body("_csrf").exists()],
-  productosController.eliminar,
-)
+router.post("/:id/eliminar", productosController.eliminar)
 
 module.exports = router

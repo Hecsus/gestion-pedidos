@@ -5,7 +5,6 @@ require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
 const helmet = require("helmet")
-const csurf = require("csurf")
 const path = require("path")
 const logger = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -45,26 +44,9 @@ app.use(express.json()) // Parsear JSON en el body
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser()) // Parsear cookies
 // 🛡️ Protección CSRF
-app.use(csurf())
-
-// Hacer disponible usuario y token CSRF en todas las vistas
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null
-  res.locals.csrfToken = req.csrfToken()
   next()
-})
-
-// Manejar errores de CSRF de forma amigable
-app.use((err, req, res, next) => {
-  if (err.code === "EBADCSRFTOKEN") {
-    return res.status(403).render("error", {
-      title: "Error de seguridad",
-      message: "Formulario caducado o inválido",
-      error: err,
-      usuario: req.session.usuario || null,
-    })
-  }
-  next(err)
 })
 
 // 🌐 Servir archivos estáticos (CSS, JS, imágenes) - IMPORTANTE: antes de las rutas
@@ -118,6 +100,9 @@ io.use((socket, next) => {
 
 const chatController = require("./controllers/chatController")
 
+// Almacenar usuarios conectados
+const onlineUsers = new Map()
+
 // 💬 Configurar Socket.IO para chat en tiempo real
 io.on("connection", (socket) => {
   const usuario = socket.request.session?.usuario
@@ -128,6 +113,17 @@ io.on("connection", (socket) => {
   if (roomUserId) {
     socket.join(`user_${roomUserId}`)
   }
+
+  if (usuario?.id) {
+    onlineUsers.set(usuario.id, usuario.rol)
+    io.emit("userStatus", { userId: usuario.id, role: usuario.rol, online: true })
+    for (const [id, role] of onlineUsers.entries()) {
+      if (id !== usuario.id) {
+        socket.emit("userStatus", { userId: id, role, online: true })
+      }
+    }
+  }
+
   console.log("👤 Usuario conectado al chat")
 
   socket.on("mensaje", async (data) => {
@@ -151,7 +147,21 @@ io.on("connection", (socket) => {
     }
   })
 
+  socket.on("getUserStatus", (target) => {
+    if (target === "admin") {
+      const adminOnline = [...onlineUsers.values()].some((r) => r === "admin")
+      socket.emit("userStatus", { userId: "admin", role: "admin", online: adminOnline })
+    } else if (target) {
+      const id = parseInt(target, 10)
+      socket.emit("userStatus", { userId: target, online: onlineUsers.has(id) })
+    }
+  })
+
   socket.on("disconnect", () => {
+    if (usuario?.id) {
+      onlineUsers.delete(usuario.id)
+      io.emit("userStatus", { userId: usuario.id, role: usuario.rol, online: false })
+    }
     console.log("👤 Usuario desconectado del chat")
   })
 })

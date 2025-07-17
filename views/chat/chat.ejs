@@ -14,7 +14,7 @@
                         <% } else { %>
                           Chat de Soporte
                         <% } %>
-                        <span class="badge bg-success ms-2" id="statusIndicator">En línea</span>
+                        <span class="badge bg-danger ms-2" id="statusIndicator">Desconectado</span>
                     </h4>
                 </div>
                 <div class="card-body p-0">
@@ -75,6 +75,8 @@ const chatForm = document.getElementById('chatForm');
 const messageInput = document.getElementById('messageInput');
 const sendButton = document.getElementById('sendButton');
 const statusIndicator = document.getElementById('statusIndicator');
+const partnerId = <%= usuario.rol === 'admin' && cliente ? cliente.id : 'null' %>;
+const isAdmin = '<%= usuario.rol %>' === 'admin';
 
 const isAdminWithoutClient = '<%= usuario.rol %>' === 'admin' && roomUserId === 'null';
 if (isAdminWithoutClient) {
@@ -122,16 +124,25 @@ socket.on('mensaje', (data) => {
 });
 
 // 🔗 Eventos de conexión
+function updateStatus(online) {
+    statusIndicator.textContent = online ? 'En línea' : 'Desconectado';
+    statusIndicator.className = online ? 'badge bg-success ms-2' : 'badge bg-danger ms-2';
+}
+
 socket.on('connect', () => {
-    statusIndicator.textContent = 'En línea';
-    statusIndicator.className = 'badge bg-success ms-2';
-    console.log('Conectado al chat');
+    socket.emit('getUserStatus', isAdmin ? partnerId : 'admin');
 });
 
-socket.on('disconnect', () => {
-    statusIndicator.textContent = 'Desconectado';
-    statusIndicator.className = 'badge bg-danger ms-2';
-    console.log('Desconectado del chat');
+socket.on('userStatus', (data) => {
+    if (isAdmin) {
+        if (partnerId !== 'null' && data.userId == partnerId) {
+            updateStatus(data.online);
+        }
+    } else {
+        if (data.role === 'admin' || data.userId === 'admin') {
+            updateStatus(data.online);
+        }
+    }
 });
 
 // 💬 Función para agregar mensaje al chat
