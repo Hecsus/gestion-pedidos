@@ -1,0 +1,110 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<!-- 📝 Formulario para crear/editar productos -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="bi bi-<%= accion === 'crear' ? 'plus-circle' : 'pencil' %>"></i> 
+                        <%= title %>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Mostrar errores -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> <%= error %>
+                        </div>
+                    <% } %>
+
+                    <form action="/productos/<%= accion === 'editar' ? producto.id + '/editar' : 'crear' %>" method="POST">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">
+                                        <i class="bi bi-tag"></i> Nombre del Producto *
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        class="form-control" 
+                                        id="nombre" 
+                                        name="nombre" 
+                                        value="<%= producto.nombre || '' %>"
+                                        required
+                                        maxlength="200"
+                                    >
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="precio" class="form-label">
+                                        <i class="bi bi-currency-euro"></i> Precio *
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        class="form-control" 
+                                        id="precio" 
+                                        name="precio" 
+                                        value="<%= producto.precio || '' %>"
+                                        step="0.01"
+                                        min="0"
+                                        required
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">
+                                <i class="bi bi-text-paragraph"></i> Descripción
+                            </label>
+                            <textarea 
+                                class="form-control" 
+                                id="descripcion" 
+                                name="descripcion" 
+                                rows="3"
+                                maxlength="500"
+                            ><%= producto.descripcion || '' %></textarea>
+                            <div class="form-text">Máximo 500 caracteres</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="stock" class="form-label">
+                                        <i class="bi bi-boxes"></i> Stock
+                                    </label>
+                                    <input 
+                                        type="number" 
+                                        class="form-control" 
+                                        id="stock" 
+                                        name="stock" 
+                                        value="<%= producto.stock || 0 %>"
+                                        min="0"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/productos" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-<%= accion === 'crear' ? 'success' : 'primary' %>">
+                                <i class="bi bi-<%= accion === 'crear' ? 'check-circle' : 'save' %>"></i> 
+                                <%= accion === 'crear' ? 'Crear Producto' : 'Guardar Cambios' %>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../partials/footer') %>
