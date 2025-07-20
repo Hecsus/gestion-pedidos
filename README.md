@@ -178,4 +178,5 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
 - Añadida vista de detalle de pedidos para administradores (`views/admin/pedido_detalle.ejs`).
 - Se añadió ruta y controlador `verDetalle` para acceder a dicha vista.
 - La gestión de pedidos ahora muestra indicadores de color en los select de estado y pago y solo mantiene un botón de eliminación por pedido.
+- Correcciones en el cambio de estado de pedidos cancelados y mejora en las insignias de estado/pago del detalle para mostrar texto explicativo.
 

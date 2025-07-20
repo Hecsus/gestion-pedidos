@@ -106,7 +106,7 @@ exports.pedidos = async (req, res) => {
 exports.cambiarEstado = async (req, res) => {
   try {
     const { id } = req.params
-    const { estado } = req.body
+    const estado = req.body.estado?.trim()
 
     const estadosValidos = ["recibido", "en_proceso", "terminado", "entregado", "cancelado"]
 
@@ -114,7 +114,11 @@ exports.cambiarEstado = async (req, res) => {
       return res.status(400).json({ error: "Estado no válido" })
     }
 
-    await db.query("UPDATE pedidos SET estado = ? WHERE id = ?", [estado, id])
+    const [result] = await db.query("UPDATE pedidos SET estado = ? WHERE id = ?", [estado, id])
+
+    if (result.affectedRows === 0) {
+      throw new Error("Pedido no encontrado")
+    }
 
     console.log(`✅ Estado del pedido ${id} cambiado a: ${estado}`)
     res.redirect("/admin/pedidos?success=estado_actualizado")
