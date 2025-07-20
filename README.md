@@ -71,7 +71,8 @@ Contiene la lógica de negocio para cada módulo de la aplicación:
 - **`adminController.js`** – Maneja el panel de administración.  
   - `dashboard` obtiene estadísticas generales (cantidad de pedidos, clientes, productos e ingresos totales) y las muestra en `views/admin/dashboard.ejs`.  
   - `pedidos` lista todos los pedidos con información del cliente y número de productos.  
-  - `cambiarEstado` y `cambiarEstadoPago` actualizan el estado de un pedido o el estado de pago respectivamente.  
+  - `cambiarEstado` y `cambiarEstadoPago` actualizan el estado de un pedido o el estado de pago respectivamente.
+  - `verDetalle` muestra toda la información de un pedido para administradores.
   - `eliminar` borra un pedido y sus detalles asociados.
 
 - **`authController.js`** – Gestión de autenticación.  
@@ -127,7 +128,7 @@ Contiene las plantillas EJS. Entre ellas:
 - **`layout.ejs`** – Plantilla base con la estructura HTML principal.  
 - **`index.ejs`**, **`error.ejs`** – Página de inicio y plantilla para errores.  
 - **`auth/`** – Formularios de login y registro.  
-- **`admin/`** – Dashboard, listado de pedidos y formularios de productos para el panel de administración.  
+- **`admin/`** – Dashboard, listado de pedidos, detalle de pedidos y formularios de productos para el panel de administración.
 - **`pedidos/`** – Listado, creación y detalle de pedidos para el usuario.  
 - **`productos/`** – Formularios y listados de productos.  
 - **`chat/`** – Interfaz del chat de soporte.  
@@ -171,4 +172,10 @@ Cada controlador asume que estas tablas existen con los campos utilizados en las
 ---
 
 Este README resume de forma detallada la funcionalidad de cada carpeta y archivo. Revisa el código fuente para más información específica sobre cada implementación.
+
+### Cambios recientes
+
+- Añadida vista de detalle de pedidos para administradores (`views/admin/pedido_detalle.ejs`).
+- Se añadió ruta y controlador `verDetalle` para acceder a dicha vista.
+- La gestión de pedidos ahora muestra indicadores de color en los select de estado y pago y solo mantiene un botón de eliminación por pedido.
 

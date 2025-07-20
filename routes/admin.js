@@ -18,6 +18,11 @@ router.get("/", adminController.dashboard)
 router.get("/pedidos", adminController.pedidos)
 
 /**
+ * Ver detalle de un pedido
+ */
+router.get("/pedidos/:id", adminController.verDetalle)
+
+/**
  * Cambiar estado de pedido
  */
 router.post("/pedidos/:id/estado", adminController.cambiarEstado)

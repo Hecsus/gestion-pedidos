@@ -66,7 +66,7 @@
                                     <td class="fw-bold text-primary">€<%= pedido.total.toFixed(2) %></td>
                                     <td>
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" class="d-inline">
-                                            <select name="estado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <select name="estado" class="form-select form-select-sm <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning' : pedido.estado === 'cancelado' ? 'bg-danger text-white' : 'bg-secondary text-white' %>" onchange="this.form.submit()">
                                                 <option value="recibido" <%= pedido.estado === 'recibido' ? 'selected' : '' %>>Recibido</option>
                                                 <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
                                                 <option value="terminado" <%= pedido.estado === 'terminado' ? 'selected' : '' %>>Terminado</option>
@@ -75,9 +75,9 @@
                                             </select>
                                         </form>
                                     </td>
-                                    <td class="<%= pedido.estado_pago === 'Pagado' ? 'text-success' : pedido.estado_pago === 'Pagado parcial' ? 'text-warning' : 'text-danger' %>">
+                                    <td>
                                         <form action="/admin/pedidos/<%= pedido.id %>/pago" method="POST" class="d-inline">
-                                            <select name="estado_pago" class="form-select form-select-sm" onchange="this.form.submit()">
+                                            <select name="estado_pago" class="form-select form-select-sm <%= pedido.estado_pago === 'Pagado' ? 'bg-success text-white' : pedido.estado_pago === 'Pagado parcial' ? 'bg-warning' : 'bg-danger text-white' %>" onchange="this.form.submit()">
                                                 <option value="Sin liquidar" <%= pedido.estado_pago === 'Sin liquidar' ? 'selected' : '' %>>Sin liquidar</option>
                                                 <option value="Pagado parcial" <%= pedido.estado_pago === 'Pagado parcial' ? 'selected' : '' %>>Pagado parcial</option>
                                                 <option value="Pagado" <%= pedido.estado_pago === 'Pagado' ? 'selected' : '' %>>Pagado</option>
@@ -91,12 +91,9 @@
                                         </small>
                                     </td>
                                     <td class="d-flex gap-1">
-                                        <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" onsubmit="return confirm('¿Anular pedido?');">
-                                            <input type="hidden" name="estado" value="cancelado">
-                                            <button class="btn btn-outline-danger btn-sm" type="submit">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </form>
+                                        <a href="/admin/pedidos/<%= pedido.id %>" class="btn btn-outline-primary btn-sm" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
                                         <!-- Borrar pedido de la base de datos -->
                                         <form action="/admin/pedidos/<%= pedido.id %>/eliminar" method="POST" onsubmit="return confirm('¿Eliminar pedido definitivamente?');">
                                             <button class="btn btn-danger btn-sm" type="submit">

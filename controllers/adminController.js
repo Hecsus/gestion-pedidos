@@ -149,6 +149,70 @@ exports.cambiarEstadoPago = async (req, res) => {
 }
 
 /**
+ * Ver detalle completo de un pedido
+ */
+exports.verDetalle = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const [pedido] = await db.query(
+      `
+      SELECT p.*, u.nombre as cliente_nombre, u.email as cliente_email
+      FROM pedidos p
+      JOIN usuarios u ON p.usuario_id = u.id
+      WHERE p.id = ?
+    `,
+      [id],
+    )
+
+    if (pedido.length === 0) {
+      return res.status(404).render('error', {
+        title: 'Pedido no encontrado',
+        message: 'El pedido solicitado no existe',
+        error: { status: 404 },
+        usuario: req.session.usuario,
+      })
+    }
+
+    const [detalles] = await db.query(
+      `
+      SELECT dp.*, pr.nombre as producto_nombre, pr.descripcion as producto_descripcion
+      FROM detalle_pedido dp
+      JOIN productos pr ON dp.producto_id = pr.id
+      WHERE dp.pedido_id = ?
+    `,
+      [id],
+    )
+
+    const pedidoFormateado = {
+      ...pedido[0],
+      total: Number(pedido[0].total) || 0,
+    }
+
+    const detallesFormateados = detalles.map((d) => ({
+      ...d,
+      precio_unitario: Number(d.precio_unitario) || 0,
+    }))
+
+    res.render('admin/pedido_detalle', {
+      title: `Pedido #${id}`,
+      pedido: pedidoFormateado,
+      detalles: detallesFormateados,
+      usuario: req.session.usuario,
+      query: req.query,
+    })
+  } catch (error) {
+    console.error('❌ Error al obtener detalle del pedido:', error)
+    res.render('error', {
+      title: 'Error',
+      message: 'Error al cargar el pedido',
+      error: error,
+      usuario: req.session.usuario,
+    })
+  }
+}
+
+/**
  * Eliminar un pedido y sus detalles
  */
 exports.eliminar = async (req, res) => {
