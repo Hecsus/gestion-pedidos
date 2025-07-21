@@ -56,7 +56,8 @@ Este proyecto es una aplicación web de ejemplo desarrollada con **Node.js**, **
 ### Aplicación principal
 
 - **`app.js`**  
-  Archivo principal que configura Express. Carga las variables de entorno con `dotenv`, aplica middlewares básicos (`morgan`, `cookie-parser`, `express.json`, `express.urlencoded`), administra sesiones con `express-session` y sirve archivos estáticos desde `public/`.  
+  Archivo principal que configura Express. Carga las variables de entorno con `dotenv`, aplica middlewares básicos (`morgan`, `cookie-parser`, `express.json`, `express.urlencoded`) y protege la aplicación con `helmet` y `express-rate-limit`.
+  Administra sesiones con `express-session` y sirve archivos estáticos desde `public/`.
   Configura EJS como motor de plantillas y define las rutas principales importando los routers de la carpeta `routes`.  
   También inicializa un servidor HTTP con Socket.IO para el chat de soporte, compartiendo la sesión con los sockets. Maneja los eventos de conexión, recepción de mensajes y desconexión.  
   Finalmente levanta el servidor en el puerto especificado y exporta la instancia de Express.
@@ -184,4 +185,8 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
 - Se añadió el estado **cancelado** con un estilo rojo a rayas y se actualizó la
   base de datos. Nuevos scripts en `scripts/` permiten recrear y actualizar la
   base de datos existente.
+- Se añadieron los middlewares de seguridad `helmet` y `express-rate-limit`.
+  Ahora las rutas de autenticación están protegidas ante abusos y se aplican
+  cabeceras HTTP seguras. Además se corrige el texto del estado en el
+  dashboard cuando un pedido carece de valor.
 

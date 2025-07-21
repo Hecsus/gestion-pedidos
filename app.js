@@ -4,6 +4,8 @@ require("dotenv").config()
 // 📦 Importar dependencias necesarias
 const express = require("express")
 const session = require("express-session")
+const helmet = require("helmet")
+const rateLimit = require("express-rate-limit")
 const path = require("path")
 const logger = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -15,6 +17,21 @@ const { Server } = require("socket.io")
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
+
+// Limitador de peticiones para rutas sensibles
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 5,
+  handler: (req, res) => {
+    res.status(429)
+    res.render("error", {
+      title: "Demasiados intentos",
+      message: "Has superado el límite de intentos. Intenta más tarde.",
+      error: { status: 429 },
+      usuario: req.session?.usuario || null,
+    })
+  },
+})
 
 // 💾 Guardar instancia de Socket.IO en la app para usarla en otros archivos
 app.set("io", io)
@@ -43,6 +60,9 @@ app.use(express.json()) // Parsear JSON en el body
 // Usar extended:true para permitir estructuras anidadas en formularios
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser()) // Parsear cookies
+app.use(
+  helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false })
+)
 
 // 🌐 Servir archivos estáticos (CSS, JS, imágenes) - IMPORTANTE: antes de las rutas
 app.use(express.static(path.join(__dirname, "public")))
@@ -62,6 +82,7 @@ const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
+app.use("/auth", authLimiter)
 app.use("/auth", authRouter) // Autenticación (login/registro)
 app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración
