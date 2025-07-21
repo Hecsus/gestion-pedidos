@@ -39,6 +39,9 @@
                             <p class="small">Escribe tu mensaje para comenzar la conversación.</p>
                         </div>
                     </div>
+                    <div id="adminReplyAlert" class="alert alert-info m-3 d-none" role="alert">
+                        El soporte ha respondido a tu mensaje.
+                    </div>
                 </div>
                 <div class="card-footer">
                     <!-- Formulario de envío -->
@@ -122,35 +125,41 @@ chatForm.addEventListener('submit', (e) => {
 // 📥 Recibir mensajes
 socket.on('mensaje', (data) => {
     addMessageToChat(data);
+    if(currentUser.rol !== 'admin' && data.rol === 'admin') {
+        const alertBox = document.getElementById('adminReplyAlert');
+        if(alertBox) {
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 4000);
+        }
+    }
 });
 
 // 🔗 Eventos de conexión
 socket.on('connect', () => {
-    if(!otherUserId){
-        statusIndicator.textContent = 'En línea';
-        statusIndicator.className = 'badge bg-success ms-2';
+    if(otherUserId){
+        socket.emit('solicitarEstado', roomUserId);
     }
     console.log('Conectado al chat');
 });
 
-socket.on('disconnect', () => {
+socket.on('adminsOnline', (count) => {
     if(!otherUserId){
-        statusIndicator.textContent = 'Desconectado';
-        statusIndicator.className = 'badge bg-danger ms-2';
+        statusIndicator.textContent = count > 0 ? 'Soporte en línea' : 'Soporte desconectado';
+        statusIndicator.className = count > 0 ? 'badge bg-success ms-2' : 'badge bg-danger ms-2';
     }
+});
+
+socket.on('disconnect', () => {
     console.log('Desconectado del chat');
 });
 
 socket.on('userStatus', (data) => {
-    if(data.userId == roomUserId){
+    if(otherUserId && data.userId == roomUserId){
         statusIndicator.textContent = data.online ? 'En línea' : 'Desconectado';
         statusIndicator.className = data.online ? 'badge bg-success ms-2' : 'badge bg-danger ms-2';
     }
 });
 
-if(otherUserId){
-    socket.emit('solicitarEstado', roomUserId);
-}
 
 // 💬 Función para agregar mensaje al chat
 function addMessageToChat(data) {

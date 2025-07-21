@@ -168,12 +168,10 @@ body {
 
 .alert-success {
   background: linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(20, 108, 67, 0.1) 100%);
-  border-left: 4px solid var(--success-color);
 }
 
 .alert-danger {
   background: linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(176, 42, 55, 0.1) 100%);
-  border-left: 4px solid var(--danger-color);
 }
 
 /* Footer mejorado */

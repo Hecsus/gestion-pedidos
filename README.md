@@ -194,4 +194,7 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
   las insignias de estado en el dashboard para mantener los mismos colores.
 - El chat de soporte ahora indica si un cliente está conectado, permite seleccionar
 cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes de atender por cada uno.
+- Eliminado el borde lateral de las alertas de éxito y error.
+- Arreglado el doble footer en el detalle de pedidos del cliente.
+- El chat de clientes informa si hay administradores conectados y muestra un aviso al recibir respuesta.
 

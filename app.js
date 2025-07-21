@@ -19,6 +19,7 @@ const server = http.createServer(app)
 const io = new Server(server)
 // Mapa para llevar registro de usuarios conectados
 const onlineUsers = new Set()
+const onlineAdmins = new Set()
 
 // Limitador de peticiones para rutas sensibles
 const authLimiter = rateLimit({
@@ -130,9 +131,13 @@ io.on("connection", (socket) => {
   }
   console.log("👤 Usuario conectado al chat")
 
+  socket.emit("adminsOnline", onlineAdmins.size)
+
   if (usuario?.id) {
     onlineUsers.add(usuario.id)
-    io.emit("userStatus", { userId: usuario.id, online: true })
+    if (usuario.rol === 'admin') onlineAdmins.add(usuario.id)
+    io.emit("userStatus", { userId: usuario.id, rol: usuario.rol, online: true })
+    io.emit("adminsOnline", onlineAdmins.size)
   }
 
   socket.on("mensaje", async (data) => {
@@ -163,7 +168,9 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     if (usuario?.id) {
       onlineUsers.delete(usuario.id)
-      io.emit("userStatus", { userId: usuario.id, online: false })
+      if (usuario.rol === 'admin') onlineAdmins.delete(usuario.id)
+      io.emit("userStatus", { userId: usuario.id, rol: usuario.rol, online: false })
+      io.emit("adminsOnline", onlineAdmins.size)
     }
     console.log("👤 Usuario desconectado del chat")
   })
