@@ -91,7 +91,7 @@
                             <div class="card h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
                                     <strong>Pedido #<%= pedido.id %></strong>
-                                    <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'danger' : 'secondary' %>">
+                                    <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'cancelado' : 'secondary' %>">
                                         <%= pedido.estado === 'en_proceso' ? 'En Proceso' : pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1) %>
                                     </span>
                                 </div>

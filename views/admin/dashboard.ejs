@@ -180,7 +180,7 @@
                                             </td>
                                             <td class="fw-bold text-primary">€<%= Number(pedido.total).toFixed(2) %></td>
                                             <td>
-                                                <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'danger' : 'secondary' %>">
+                                                <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'cancelado' : 'secondary' %>">
                                                     <%= pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1) %>
                                                 </span>
                                             </td>

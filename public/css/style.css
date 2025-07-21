@@ -246,3 +246,11 @@ footer {
 .chat-message.other {
   background-color: var(--light-color);
 }
+
+/* Estado cancelado con patrón rojo y gris */
+.bg-cancelado {
+  color: #fff !important;
+  background-color: #dc3545;
+  background-image: repeating-linear-gradient(45deg, #dc3545 0, #dc3545 10px, #6c757d 10px, #6c757d 20px);
+}
+

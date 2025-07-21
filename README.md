@@ -181,4 +181,7 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
 - Correcciones en el cambio de estado de pedidos cancelados y mejora en las insignias de estado/pago del detalle para mostrar texto explicativo.
 - Se corrigió la vista de detalle para mostrar correctamente el estado y pago
   alineando los colores con la gestión de pedidos.
+- Se añadió el estado **cancelado** con un estilo rojo a rayas y se actualizó la
+  base de datos. Nuevos scripts en `scripts/` permiten recrear y actualizar la
+  base de datos existente.
 

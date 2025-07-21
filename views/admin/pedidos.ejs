@@ -66,7 +66,7 @@
                                     <td class="fw-bold text-primary">€<%= pedido.total.toFixed(2) %></td>
                                     <td>
                                         <form action="/admin/pedidos/<%= pedido.id %>/estado" method="POST" class="d-inline">
-                                            <select name="estado" class="form-select form-select-sm <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning' : pedido.estado === 'cancelado' ? 'bg-danger text-white' : 'bg-secondary text-white' %>" onchange="this.form.submit()">
+                                            <select name="estado" class="form-select form-select-sm <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning' : pedido.estado === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>" onchange="this.form.submit()">
                                                 <option value="recibido" <%= pedido.estado === 'recibido' ? 'selected' : '' %>>Recibido</option>
                                                 <option value="en_proceso" <%= pedido.estado === 'en_proceso' ? 'selected' : '' %>>En Proceso</option>
                                                 <option value="terminado" <%= pedido.estado === 'terminado' ? 'selected' : '' %>>Terminado</option>
