@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser")
 const createError = require("http-errors")
 const http = require("http")
 const { Server } = require("socket.io")
+const db = require("./config/db")
 
 // 🏗️ Crear aplicación Express
 const app = express()
@@ -57,6 +58,31 @@ app.use((req, res, next) => {
   next()
 })
 
+// Contar mensajes de soporte sin leer para clientes
+app.use(async (req, res, next) => {
+  res.locals.mensajesSinLeer = 0
+  if (req.session.usuario && req.session.usuario.rol === 'cliente') {
+    try {
+      const userId = req.session.usuario.id
+      const [rows] = await db.query(
+        `SELECT COUNT(*) AS sin_leer
+           FROM mensajes_soporte m
+          WHERE m.usuario_id = ?
+            AND m.emisor_rol = 'admin'
+            AND m.id > COALESCE((SELECT MAX(id)
+                                FROM mensajes_soporte
+                                WHERE usuario_id = ?
+                                  AND emisor_rol = 'cliente'),0)`,
+        [userId, userId],
+      )
+      res.locals.mensajesSinLeer = rows[0].sin_leer
+    } catch (err) {
+      console.error('❌ Error contando mensajes sin leer:', err)
+    }
+  }
+  next()
+})
+
 // 🛠️ Middlewares básicos de Express
 app.use(logger("dev")) // Log de peticiones HTTP
 app.use(express.json()) // Parsear JSON en el body
@@ -85,7 +111,8 @@ const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
-app.use("/auth", authLimiter)
+app.use("/auth/login", authLimiter)
+app.use("/auth/register", authLimiter)
 app.use("/auth", authRouter) // Autenticación (login/registro)
 app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración

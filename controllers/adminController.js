@@ -20,7 +20,7 @@ exports.dashboard = async (req, res) => {
       SELECT
         p.id,
         p.total,
-        p.estado,
+        TRIM(p.estado) AS estado,
         p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
@@ -38,10 +38,16 @@ exports.dashboard = async (req, res) => {
     statsData.total_productos = Number(statsData.total_productos) || 0
     statsData.ingresos_totales = Number(statsData.ingresos_totales) || 0
 
+    const pedidosRecientesFormateados = pedidosRecientes.map((p) => ({
+      ...p,
+      total: Number(p.total) || 0,
+      estado: p.estado ? p.estado.trim() : p.estado,
+    }))
+
     res.render("admin/dashboard", {
       title: "Panel de Administración",
       stats: statsData,
-      pedidosRecientes,
+      pedidosRecientes: pedidosRecientesFormateados,
       usuario: req.session.usuario,
     })
   } catch (error) {
@@ -61,10 +67,10 @@ exports.dashboard = async (req, res) => {
 exports.pedidos = async (req, res) => {
   try {
     const [pedidos] = await db.query(`
-      SELECT 
+      SELECT
         p.id,
         p.total,
-        p.estado,
+        TRIM(p.estado) AS estado,
         p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
@@ -80,6 +86,7 @@ exports.pedidos = async (req, res) => {
     const pedidosFormateados = pedidos.map((p) => ({
       ...p,
       total: Number(p.total) || 0,
+      estado: p.estado ? p.estado.trim() : p.estado,
       estado_pago: p.estado_pago,
     }))
 

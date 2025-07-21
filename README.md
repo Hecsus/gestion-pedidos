@@ -197,4 +197,10 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
 - Eliminado el borde lateral de las alertas de éxito y error.
 - Arreglado el doble footer en el detalle de pedidos del cliente.
 - El chat de clientes informa si hay administradores conectados y muestra un aviso al recibir respuesta.
+- La portada se adapta al rol del usuario mostrando botones coherentes y el enlace
+  a soporte para clientes incluye un indicador de mensajes sin leer.
+- El limitador de peticiones solo afecta ahora a las rutas de inicio de sesión y
+  registro para evitar bloqueos tras cerrar sesión.
+- Se corrige la columna de estado en el dashboard eliminando espacios y unificando
+  los colores con la gestión de pedidos.
 
