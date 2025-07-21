@@ -197,8 +197,9 @@ exports.verDetalle = async (req, res) => {
     // Obtener pedido con detalles
     const [pedido] = await db.query(
       `
-      SELECT 
-        p.*,
+      SELECT
+        p.*, 
+        p.pago_estado AS estado_pago,
         u.nombre as cliente_nombre,
         u.email as cliente_email
       FROM pedidos p

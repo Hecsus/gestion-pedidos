@@ -161,7 +161,11 @@ exports.verDetalle = async (req, res) => {
 
     const [pedido] = await db.query(
       `
-      SELECT p.*, u.nombre as cliente_nombre, u.email as cliente_email
+      SELECT
+        p.*, 
+        p.pago_estado AS estado_pago,
+        u.nombre as cliente_nombre,
+        u.email as cliente_email
       FROM pedidos p
       JOIN usuarios u ON p.usuario_id = u.id
       WHERE p.id = ?
