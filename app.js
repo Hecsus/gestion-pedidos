@@ -17,6 +17,8 @@ const { Server } = require("socket.io")
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server)
+// Mapa para llevar registro de usuarios conectados
+const onlineUsers = new Set()
 
 // Limitador de peticiones para rutas sensibles
 const authLimiter = rateLimit({
@@ -128,6 +130,11 @@ io.on("connection", (socket) => {
   }
   console.log("👤 Usuario conectado al chat")
 
+  if (usuario?.id) {
+    onlineUsers.add(usuario.id)
+    io.emit("userStatus", { userId: usuario.id, online: true })
+  }
+
   socket.on("mensaje", async (data) => {
     let destino = data.para
     if (!destino || destino === "null") destino = roomUserId
@@ -149,7 +156,15 @@ io.on("connection", (socket) => {
     }
   })
 
+  socket.on("solicitarEstado", (id) => {
+    socket.emit("userStatus", { userId: id, online: onlineUsers.has(Number(id)) })
+  })
+
   socket.on("disconnect", () => {
+    if (usuario?.id) {
+      onlineUsers.delete(usuario.id)
+      io.emit("userStatus", { userId: usuario.id, online: false })
+    }
     console.log("👤 Usuario desconectado del chat")
   })
 })

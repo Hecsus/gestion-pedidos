@@ -192,4 +192,6 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
 - Los selectores de estado y pago muestran cada opción con su color correspondiente
   para facilitar la identificación antes de elegir un valor. Se corrigen también
   las insignias de estado en el dashboard para mantener los mismos colores.
+- El chat de soporte ahora indica si un cliente está conectado, permite seleccionar
+cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes de atender por cada uno.
 
