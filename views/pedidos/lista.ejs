@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Gestión de Pedidos</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam"></i> Gestión de Pedidos
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/pedidos">
+                            <i class="bi bi-bag"></i> Mis Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pedidos/crear">
+                            <i class="bi bi-plus-circle"></i> Nuevo Pedido
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chat">
+                            <i class="bi bi-chat-dots"></i> Soporte
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <%= usuario.nombre %>
+                            <span class="badge bg-secondary"><%= usuario.rol %></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/auth/logout">
+                                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <!-- 🛒 Lista de pedidos del usuario -->
+        <div class="container py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-bag"></i> Mis Pedidos</h2>
+                <a href="/pedidos/crear" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nuevo Pedido
+                </a>
+            </div>
+
+            <!-- Mensajes de éxito/error -->
+            <% if (query && query.success === 'created') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> Pedido creado exitosamente.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } else if (query && query.success === 'cancelado') { %>
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle"></i> Pedido cancelado.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <% if (pedidos && pedidos.length > 0) { %>
+                <div class="row">
+                    <% pedidos.forEach(pedido => { %>
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <strong>Pedido #<%= pedido.id %></strong>
+                                    <span class="badge bg-<%= pedido.estado === 'entregado' ? 'success' : pedido.estado === 'terminado' ? 'info' : pedido.estado === 'en_proceso' ? 'warning' : pedido.estado === 'cancelado' ? 'cancelado' : 'secondary' %>">
+                                        <%= pedido.estado === 'en_proceso' ? 'En Proceso' : pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1) %>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <i class="bi bi-calendar"></i> 
+                                        <%= new Date(pedido.fecha_pedido).toLocaleDateString('es-ES') %>
+                                    </p>
+                                    <p class="card-text">
+                                        <i class="bi bi-box"></i>
+                                        <%= pedido.total_productos %> producto(s)
+                                    </p>
+                                    <% if (pedido.productos_detalle) { %>
+                                    <p class="card-text small text-muted">
+                                        <%= pedido.productos_detalle %>
+                                    </p>
+                                    <% } %>
+                                    <p class="card-text">
+                                        <strong class="text-primary">€<%= pedido.total.toFixed(2) %></strong>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-<%= pedido.pago_estado === 'Pagado' ? 'success' : pedido.pago_estado === 'Pagado parcial' ? 'info' : 'warning' %>">
+                                            <%= pedido.pago_estado %>
+                                        </span>
+                                        <a href="/pedidos/<%= pedido.id %>" class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-eye"></i> Ver Detalles
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <i class="bi bi-bag-x text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">No tienes pedidos aún</h4>
+                    <p class="text-muted">¡Crea tu primer pedido para comenzar!</p>
+                    <a href="/pedidos/crear" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Crear Primer Pedido
+                    </a>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">© 2025 Sistema de Gestión de Pedidos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
