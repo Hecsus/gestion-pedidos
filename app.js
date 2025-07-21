@@ -26,6 +26,7 @@ const onlineAdmins = new Set()
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5,
+  skipSuccessfulRequests: true,
   handler: (req, res) => {
     res.status(429)
     res.render("error", {
@@ -109,8 +110,8 @@ const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
-app.use("/auth/login", authLimiter)
-app.use("/auth/register", authLimiter)
+app.post("/auth/login", authLimiter)
+app.post("/auth/register", authLimiter)
 app.use("/auth", authRouter) // Autenticación (login/registro)
 app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración

@@ -195,12 +195,15 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
 - El chat de soporte ahora indica si un cliente está conectado, permite seleccionar
 cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes de atender por cada uno.
 - Eliminado el borde lateral de las alertas de éxito y error.
+- La página de error mantiene ahora la cabecera y pie de la aplicación.
 - Arreglado el doble footer en el detalle de pedidos del cliente.
 - El chat de clientes informa si hay administradores conectados y muestra un aviso al recibir respuesta.
 - La portada se adapta al rol del usuario mostrando botones coherentes y el enlace
   a soporte para clientes incluye un indicador de mensajes sin leer.
 - El limitador de peticiones solo afecta ahora a las rutas de inicio de sesión y
   registro para evitar bloqueos tras cerrar sesión.
+- Además, los inicios de sesión correctos ya no cuentan para el límite de
+  intentos, evitando bloqueos al cambiar de cuenta.
 - Se corrige la columna de estado en el dashboard eliminando espacios y unificando
   los colores con la gestión de pedidos.
 - El indicador de mensajes pendientes usa la última visita al chat y se limpia la
