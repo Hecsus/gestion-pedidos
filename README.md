@@ -189,4 +189,7 @@ Este README resume de forma detallada la funcionalidad de cada carpeta y archivo
   Ahora las rutas de autenticación están protegidas ante abusos y se aplican
   cabeceras HTTP seguras. Además se corrige el texto del estado en el
   dashboard cuando un pedido carece de valor.
+- Los selectores de estado y pago muestran cada opción con su color correspondiente
+  para facilitar la identificación antes de elegir un valor. Se corrigen también
+  las insignias de estado en el dashboard para mantener los mismos colores.
 
