@@ -8,11 +8,11 @@ exports.dashboard = async (req, res) => {
   try {
     // Obtener estadísticas generales
     const [stats] = await db.query(`
-      SELECT 
+      SELECT
         (SELECT COUNT(*) FROM pedidos) as total_pedidos,
         (SELECT COUNT(*) FROM usuarios WHERE rol = 'cliente') as total_clientes,
         (SELECT COUNT(*) FROM productos) as total_productos,
-        (SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE estado = 'entregado') as ingresos_totales
+        (SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE TRIM(estado) = 'entregado') as ingresos_totales
     `)
 
     // Obtener pedidos recientes (ajustado a tu estructura de BD)
@@ -41,7 +41,7 @@ exports.dashboard = async (req, res) => {
     const pedidosRecientesFormateados = pedidosRecientes.map((p) => ({
       ...p,
       total: Number(p.total) || 0,
-      estado: p.estado ? p.estado.trim() : p.estado,
+      estado: p.estado ? p.estado.trim().toLowerCase() : "",
     }))
 
     res.render("admin/dashboard", {

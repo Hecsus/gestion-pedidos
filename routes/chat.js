@@ -28,6 +28,18 @@ router.get("/", requireAuth, async (req, res) => {
       cliente = clientes.find((c) => c.id == req.query.cliente) || null
     }
   }
+
+  // Registrar última lectura para saber qué mensajes están leídos
+  try {
+    const [maxRow] = await db.query(
+      "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ?",
+      [req.session.usuario.id],
+    )
+    req.session.ultimaLecturaSoporte = maxRow[0].lastId || 0
+  } catch (err) {
+    console.error("❌ Error obteniendo última lectura de soporte:", err)
+  }
+
   res.locals.cliente = cliente
   res.locals.clientes = clientes
   chatController.renderChat(req, res)

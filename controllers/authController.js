@@ -157,6 +157,7 @@ exports.logout = (req, res) => {
     } else {
       console.log(`✅ Sesión cerrada: ${usuario?.email || "usuario"}`)
     }
-    res.redirect("/")
+    res.clearCookie("connect.sid")
+    res.redirect("/auth/login?loggedOut=true")
   })
 }

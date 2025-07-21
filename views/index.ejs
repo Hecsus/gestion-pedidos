@@ -133,7 +133,7 @@
                                     <a href="/admin" class="btn btn-primary btn-lg px-4">
                                         <i class="bi bi-speedometer2"></i> Panel de Administración
                                     </a>
-                                    <a href="/productos" class="btn btn-outline-primary btn-lg px-4">
+                                    <a href="/productos" class="btn btn-success btn-lg px-4">
                                         <i class="bi bi-box"></i> Gestionar Productos
                                     </a>
                                     <a href="/chat" class="btn btn-info btn-lg px-4">
@@ -169,12 +169,17 @@
                             </div>
                             <h5 class="card-title">Gestión de Pedidos</h5>
                             <p class="card-text text-muted">
-                                Crea, gestiona y realiza seguimiento de todos tus pedidos de manera sencilla e intuitiva.
+                                <% if(usuario && usuario.rol === 'admin'){ %>
+                                    Gestiona los pedidos de tus clientes de manera eficiente.
+                                <% } else { %>
+                                    Crea, gestiona y realiza seguimiento de todos tus pedidos de manera sencilla e intuitiva.
+                                <% } %>
                             </p>
                         </div>
                     </div>
                 </div>
-                
+
+                <% if(!usuario || usuario.rol === 'admin') { %>
                 <div class="col-md-4">
                     <div class="card h-100 text-center border-0 shadow-sm">
                         <div class="card-body p-4">
@@ -188,6 +193,7 @@
                         </div>
                     </div>
                 </div>
+                <% } %>
                 
                 <div class="col-md-4">
                     <div class="card h-100 text-center border-0 shadow-sm">
@@ -210,11 +216,19 @@
                     <div class="col-12">
                         <div class="card bg-light">
                             <div class="card-body text-center py-4">
-                                <h5 class="card-title">¿Necesitas ayuda?</h5>
-                                <p class="card-text">Nuestro equipo de soporte está disponible para ayudarte.</p>
-                                <a href="/chat" class="btn btn-primary">
-                                    <i class="bi bi-chat-dots"></i> Iniciar Chat de Soporte
-                                </a>
+                                <% if(usuario.rol === 'admin'){ %>
+                                    <h5 class="card-title">Ayuda a tus clientes</h5>
+                                    <p class="card-text">Accede al chat para resolver las dudas de los usuarios.</p>
+                                    <a href="/chat" class="btn btn-primary">
+                                        <i class="bi bi-chat-dots"></i> Atender Soporte
+                                    </a>
+                                <% } else { %>
+                                    <h5 class="card-title">¿Necesitas ayuda?</h5>
+                                    <p class="card-text">Nuestro equipo de soporte está disponible para ayudarte.</p>
+                                    <a href="/chat" class="btn btn-primary">
+                                        <i class="bi bi-chat-dots"></i> Iniciar Chat de Soporte
+                                    </a>
+                                <% } %>
                             </div>
                         </div>
                     </div>

@@ -60,8 +60,10 @@
                                         name="nombre"
                                         value="<%= oldData.nombre || '' %>"
                                         required
+                                        minlength="3"
                                         autocomplete="name"
                                     >
+                                    <div class="form-text">Mínimo 3 caracteres</div>
                                 </div>
 
                                 <div class="mb-3">
@@ -89,6 +91,7 @@
                                         id="password"
                                         name="password"
                                         required
+                                        minlength="6"
                                         autocomplete="new-password"
                                     >
                                     <div class="form-text">Mínimo 6 caracteres</div>

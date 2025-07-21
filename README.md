@@ -203,4 +203,8 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   registro para evitar bloqueos tras cerrar sesión.
 - Se corrige la columna de estado en el dashboard eliminando espacios y unificando
   los colores con la gestión de pedidos.
+- El indicador de mensajes pendientes usa la última visita al chat y se limpia la
+  cookie de sesión al cerrar sesión mostrando un aviso con SweetAlert.
+- La portada muestra opciones adaptadas: los clientes no ven el control de inventario
+  y los administradores disponen de un mensaje para ayudar a los usuarios.
 

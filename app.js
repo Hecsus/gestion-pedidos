@@ -64,16 +64,14 @@ app.use(async (req, res, next) => {
   if (req.session.usuario && req.session.usuario.rol === 'cliente') {
     try {
       const userId = req.session.usuario.id
+      const lastRead = req.session.ultimaLecturaSoporte || 0
       const [rows] = await db.query(
         `SELECT COUNT(*) AS sin_leer
-           FROM mensajes_soporte m
-          WHERE m.usuario_id = ?
-            AND m.emisor_rol = 'admin'
-            AND m.id > COALESCE((SELECT MAX(id)
-                                FROM mensajes_soporte
-                                WHERE usuario_id = ?
-                                  AND emisor_rol = 'cliente'),0)`,
-        [userId, userId],
+           FROM mensajes_soporte
+          WHERE usuario_id = ?
+            AND emisor_rol = 'admin'
+            AND id > ?`,
+        [userId, lastRead],
       )
       res.locals.mensajesSinLeer = rows[0].sin_leer
     } catch (err) {
