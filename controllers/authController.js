@@ -35,7 +35,7 @@ exports.procesarRegistro = async (req, res) => {
 
   // Si hay errores de validación, mostrar formulario con errores
   if (!errors.isEmpty()) {
-    return res.render("auth/register", {
+    return res.status(400).render("auth/register", {
       title: "Registro de Usuario",
       errors: errors.array(),
       oldData: req.body,
@@ -46,7 +46,7 @@ exports.procesarRegistro = async (req, res) => {
   // Validar contraseña de administrador si se intenta crear un admin
   if (rol === "admin") {
     if (!admin_password || admin_password !== "4dm1n") {
-      return res.render("auth/register", {
+      return res.status(401).render("auth/register", {
         title: "Registro de Usuario",
         errors: [{ msg: "Contraseña de administrador incorrecta" }],
         oldData: req.body,
@@ -60,7 +60,7 @@ exports.procesarRegistro = async (req, res) => {
     const [existingUser] = await db.query("SELECT id FROM usuarios WHERE email = ?", [email])
 
     if (existingUser.length > 0) {
-      return res.render("auth/register", {
+      return res.status(400).render("auth/register", {
         title: "Registro de Usuario",
         errors: [{ msg: "Este email ya está registrado" }],
         oldData: req.body,
@@ -83,7 +83,7 @@ exports.procesarRegistro = async (req, res) => {
     res.redirect("/auth/login?registered=true")
   } catch (error) {
     console.error("❌ Error en registro:", error)
-    res.render("auth/register", {
+    res.status(500).render("auth/register", {
       title: "Registro de Usuario",
       errors: [{ msg: "Error interno del servidor" }],
       oldData: req.body,
@@ -101,7 +101,7 @@ exports.procesarLogin = async (req, res) => {
 
   // Si hay errores de validación
   if (!errors.isEmpty()) {
-    return res.render("auth/login", {
+    return res.status(400).render("auth/login", {
       title: "Iniciar Sesión",
       errors: errors.array(),
       oldData: req.body,
@@ -115,7 +115,7 @@ exports.procesarLogin = async (req, res) => {
 
     // Verificar si existe el usuario y la contraseña es correcta
     if (usuarios.length === 0 || !(await bcrypt.compare(password, usuarios[0].password))) {
-      return res.render("auth/login", {
+      return res.status(401).render("auth/login", {
         title: "Iniciar Sesión",
         errors: [{ msg: "Email o contraseña incorrectos" }],
         oldData: { email },
@@ -137,7 +137,7 @@ exports.procesarLogin = async (req, res) => {
     res.redirect(redirectTo)
   } catch (error) {
     console.error("❌ Error en login:", error)
-    res.render("auth/login", {
+    res.status(500).render("auth/login", {
       title: "Iniciar Sesión",
       errors: [{ msg: "Error interno del servidor" }],
       oldData: { email },

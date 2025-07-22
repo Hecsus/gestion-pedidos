@@ -219,4 +219,9 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   disponibles.
 - Los estados de los pedidos recientes en el dashboard muestran el texto y los
   colores coherentes con la gestión de pedidos.
+- Los intentos fallidos de autenticación devuelven ahora códigos de estado
+  adecuados para que el limitador de peticiones funcione correctamente.
+- Al cancelar un pedido se solicita confirmación con un mensaje más descriptivo.
+- El cálculo de ingresos en el dashboard considera los pedidos cuyo pago está
+  registrado como pagado o pagado parcial.
 

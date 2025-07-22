@@ -105,7 +105,7 @@
                     <i class="bi bi-arrow-left"></i> Volver a Mis Pedidos
                 </a>
                 <% if (pedido.estado === 'recibido' || pedido.estado === 'pendiente') { %>
-                    <form action="/pedidos/<%= pedido.id %>/cancelar" method="POST" class="d-inline" onsubmit="return confirm('¿Cancelar pedido?');">
+                    <form action="/pedidos/<%= pedido.id %>/cancelar" method="POST" class="d-inline" onsubmit="return confirm('¿Está seguro de que desea cancelar este pedido?');">
                         <button class="btn btn-warning">
                             <i class="bi bi-x-circle"></i> Cancelar Pedido
                         </button>

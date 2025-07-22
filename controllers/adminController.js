@@ -12,7 +12,9 @@ exports.dashboard = async (req, res) => {
         (SELECT COUNT(*) FROM pedidos) as total_pedidos,
         (SELECT COUNT(*) FROM usuarios WHERE rol = 'cliente') as total_clientes,
         (SELECT COUNT(*) FROM productos) as total_productos,
-        (SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE LOWER(TRIM(estado)) = 'entregado') as ingresos_totales
+        (SELECT COALESCE(SUM(total), 0)
+           FROM pedidos
+          WHERE LOWER(TRIM(pago_estado)) IN ('pagado', 'pagado parcial')) as ingresos_totales
     `)
 
     // Obtener pedidos recientes (ajustado a tu estructura de BD)
