@@ -128,6 +128,19 @@ exports.procesarLogin = async (req, res) => {
     delete usuario.password
     req.session.usuario = usuario
 
+    if (usuario.rol === "cliente") {
+      try {
+        const [maxRow] = await db.query(
+          "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ? AND emisor_rol = 'admin'",
+          [usuario.id],
+        )
+        req.session.ultimaLecturaSoporte = maxRow[0].lastId || 0
+      } catch (e) {
+        console.error("❌ Error obteniendo última lectura de soporte:", e)
+        req.session.ultimaLecturaSoporte = 0
+      }
+    }
+
     console.log(`✅ Usuario logueado: ${email} (${usuario.rol})`)
 
     // Redirigir a la página que intentaba acceder o al dashboard
