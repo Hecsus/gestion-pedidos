@@ -40,4 +40,23 @@ router.get("/mensajes", async (req, res) => {
   }
 })
 
+// Marcar como leídos los mensajes recibidos hasta el momento
+router.post("/mensajes/leido", async (req, res) => {
+  if (!req.session.usuario)
+    return res.status(401).json({ error: "No autenticado" })
+
+  try {
+    const userId = req.session.usuario.id
+    const [row] = await db.query(
+      "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ?",
+      [userId],
+    )
+    req.session.ultimaLecturaSoporte = row[0].lastId || req.session.ultimaLecturaSoporte || 0
+    res.json({ success: true })
+  } catch (err) {
+    console.error("❌ Error marcando mensajes como leídos:", err)
+    res.status(500).json({ error: "Error del servidor" })
+  }
+})
+
 module.exports = router;

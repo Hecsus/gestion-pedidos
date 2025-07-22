@@ -44,7 +44,9 @@
             <a class="nav-link position-relative" href="/chat">
               <i class="bi bi-chat-dots"></i> Soporte
               <% if (usuario.rol === 'cliente' && mensajesSinLeer > 0) { %>
-                <span class="badge bg-danger ms-1"><%= mensajesSinLeer %></span>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  <%= mensajesSinLeer %>
+                </span>
               <% } %>
             </a>
           </li>

@@ -22,7 +22,7 @@ exports.dashboard = async (req, res) => {
       SELECT
         p.id,
         p.total,
-        TRIM(p.estado) AS estado,
+        LOWER(TRIM(COALESCE(NULLIF(p.estado, ''), 'recibido'))) AS estado,
         p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
@@ -43,7 +43,7 @@ exports.dashboard = async (req, res) => {
     const pedidosRecientesFormateados = pedidosRecientes.map((p) => ({
       ...p,
       total: Number(p.total) || 0,
-      estado: p.estado ? p.estado.trim().toLowerCase() : "",
+      estado: p.estado || "recibido",
     }))
 
     res.render("admin/dashboard", {
@@ -72,7 +72,7 @@ exports.pedidos = async (req, res) => {
       SELECT
         p.id,
         p.total,
-        TRIM(p.estado) AS estado,
+        LOWER(COALESCE(NULLIF(TRIM(p.estado), ''), 'recibido')) AS estado,
         p.pago_estado AS estado_pago,
         p.fecha_pedido,
         u.nombre as cliente_nombre,
@@ -88,7 +88,7 @@ exports.pedidos = async (req, res) => {
     const pedidosFormateados = pedidos.map((p) => ({
       ...p,
       total: Number(p.total) || 0,
-      estado: p.estado ? p.estado.trim() : p.estado,
+      estado: p.estado || 'recibido',
       estado_pago: p.estado_pago,
     }))
 

@@ -228,4 +228,8 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   contador de mensajes muestre únicamente los nuevos.
 - Se ajustó la insignia de estado en los pedidos recientes del dashboard para
   usar el mismo formato que en la gestión de pedidos.
+- La insignia del chat vuelve a mostrar cuántos mensajes de soporte quedan por
+  leer y se actualiza automáticamente al recibirlos.
+- Se corrige la columna de estado de los pedidos recientes en el dashboard para
+  garantizar que siempre muestre texto y colores coherentes.
 

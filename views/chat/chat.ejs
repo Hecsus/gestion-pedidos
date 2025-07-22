@@ -131,6 +131,7 @@ socket.on('mensaje', (data) => {
             alertBox.classList.remove('d-none');
             setTimeout(() => alertBox.classList.add('d-none'), 4000);
         }
+        fetch('/api/mensajes/leido', { method: 'POST' });
     }
 });
 
