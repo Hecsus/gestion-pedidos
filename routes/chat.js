@@ -35,7 +35,9 @@ router.get("/", requireAuth, async (req, res) => {
       "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ?",
       [req.session.usuario.id],
     )
-    req.session.ultimaLecturaSoporte = maxRow[0].lastId || 0
+    const lastId = maxRow[0].lastId || 0
+    req.session.ultimaLecturaSoporte = lastId
+    res.cookie("ultimaLecturaSoporte", lastId, { maxAge: 31536000000 })
   } catch (err) {
     console.error("❌ Error obteniendo última lectura de soporte:", err)
   }

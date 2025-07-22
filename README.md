@@ -224,12 +224,15 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
 - Al cancelar un pedido se solicita confirmación con un mensaje más descriptivo.
 - El cálculo de ingresos en el dashboard considera los pedidos cuyo pago está
   registrado como pagado o pagado parcial.
-- Al iniciar sesión se marca como leída la conversación de soporte para que el
-  contador de mensajes muestre únicamente los nuevos.
+- El indicador de soporte mantiene los mensajes pendientes entre sesiones usando
+  una cookie `ultimaLecturaSoporte`. Ya no se marcan como leídos al iniciar
+  sesión automáticamente.
 - Se ajustó la insignia de estado en los pedidos recientes del dashboard para
   usar el mismo formato que en la gestión de pedidos.
 - La insignia del chat vuelve a mostrar cuántos mensajes de soporte quedan por
   leer y se actualiza automáticamente al recibirlos.
 - Se corrige la columna de estado de los pedidos recientes en el dashboard para
   garantizar que siempre muestre texto y colores coherentes.
+- El contador de mensajes sin leer en el menú ahora se conserva tras cerrar
+  sesión y volver a entrar.
 

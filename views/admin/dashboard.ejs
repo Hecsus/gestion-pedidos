@@ -180,7 +180,7 @@
                                             </td>
                                             <td class="fw-bold text-primary">€<%= Number(pedido.total).toFixed(2) %></td>
                                             <td>
-                                                <span class="badge <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning text-dark' : pedido.estado === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>">
+                                                <span class="badge <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning' : pedido.estado === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>">
                                                     <%= pedido.estado === 'en_proceso'
                                                         ? 'En Proceso'
                                                         : pedido.estado

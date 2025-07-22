@@ -51,7 +51,9 @@ router.post("/mensajes/leido", async (req, res) => {
       "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ?",
       [userId],
     )
-    req.session.ultimaLecturaSoporte = row[0].lastId || req.session.ultimaLecturaSoporte || 0
+    const lastId = row[0].lastId || req.session.ultimaLecturaSoporte || 0
+    req.session.ultimaLecturaSoporte = lastId
+    res.cookie("ultimaLecturaSoporte", lastId, { maxAge: 31536000000 })
     res.json({ success: true })
   } catch (err) {
     console.error("❌ Error marcando mensajes como leídos:", err)
