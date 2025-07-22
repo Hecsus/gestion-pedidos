@@ -7,7 +7,7 @@ const router = express.Router()
  */
 router.get("/", (req, res) => {
   res.render("index", {
-    title: "Gestión de Pedidos",
+    title: "Inicio",
     usuario: req.session.usuario || null,
   })
 })

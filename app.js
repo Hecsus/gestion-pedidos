@@ -5,7 +5,6 @@ require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
 const helmet = require("helmet")
-const rateLimit = require("express-rate-limit")
 const path = require("path")
 const logger = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -23,20 +22,7 @@ const onlineUsers = new Set()
 const onlineAdmins = new Set()
 
 // Limitador de peticiones para rutas sensibles
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 5,
-  skipSuccessfulRequests: true,
-  handler: (req, res) => {
-    res.status(429)
-    res.render("error", {
-      title: "Demasiados intentos",
-      message: "Has superado el límite de intentos. Intenta más tarde.",
-      error: { status: 429 },
-      usuario: req.session?.usuario || null,
-    })
-  },
-})
+const { authLimiter } = require("./middlewares/rateLimiter")
 
 // 💾 Guardar instancia de Socket.IO en la app para usarla en otros archivos
 app.set("io", io)
@@ -110,8 +96,6 @@ const apiRouter = require("./routes/api")
 
 // 📍 Definir rutas principales
 app.use("/", indexRouter) // Página principal
-app.post("/auth/login", authLimiter)
-app.post("/auth/register", authLimiter)
 app.use("/auth", authRouter) // Autenticación (login/registro)
 app.use("/pedidos", pedidosRouter) // Gestión de pedidos
 app.use("/admin", adminRouter) // Panel de administración

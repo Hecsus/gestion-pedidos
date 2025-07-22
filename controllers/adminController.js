@@ -12,7 +12,7 @@ exports.dashboard = async (req, res) => {
         (SELECT COUNT(*) FROM pedidos) as total_pedidos,
         (SELECT COUNT(*) FROM usuarios WHERE rol = 'cliente') as total_clientes,
         (SELECT COUNT(*) FROM productos) as total_productos,
-        (SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE TRIM(estado) = 'entregado') as ingresos_totales
+        (SELECT COALESCE(SUM(total), 0) FROM pedidos WHERE LOWER(TRIM(estado)) = 'entregado') as ingresos_totales
     `)
 
     // Obtener pedidos recientes (ajustado a tu estructura de BD)
@@ -36,7 +36,7 @@ exports.dashboard = async (req, res) => {
     statsData.total_pedidos = Number(statsData.total_pedidos) || 0
     statsData.total_clientes = Number(statsData.total_clientes) || 0
     statsData.total_productos = Number(statsData.total_productos) || 0
-    statsData.ingresos_totales = Number(statsData.ingresos_totales) || 0
+    statsData.ingresos_totales = parseFloat(statsData.ingresos_totales) || 0
 
     const pedidosRecientesFormateados = pedidosRecientes.map((p) => ({
       ...p,

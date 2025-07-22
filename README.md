@@ -210,4 +210,13 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   cookie de sesión al cerrar sesión mostrando un aviso con SweetAlert.
 - La portada muestra opciones adaptadas: los clientes no ven el control de inventario
   y los administradores disponen de un mensaje para ayudar a los usuarios.
+- Los títulos de cada página ahora muestran correctamente el nombre de la vista.
+- El limitador de peticiones se trasladó a un middleware y vuelve a funcionar
+  para los formularios de login y registro.
+- El dashboard administra los ingresos totales de forma precisa y muestra
+  decimales.
+- La página principal centra las tarjetas informativas cuando solo hay dos
+  disponibles.
+- Los estados de los pedidos recientes en el dashboard muestran el texto y los
+  colores coherentes con la gestión de pedidos.
 
