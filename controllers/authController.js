@@ -129,10 +129,19 @@ exports.procesarLogin = async (req, res) => {
     req.session.usuario = usuario
 
     if (usuario.rol === "cliente") {
-      // Usar la información almacenada en la cookie para mantener las
-      // conversaciones pendientes entre sesiones
+      // Mantener la última lectura de soporte usando la cookie.
+      // Si no existe, consideramos leídos todos los mensajes previos
       const ultima = parseInt(req.cookies.ultimaLecturaSoporte, 10)
-      req.session.ultimaLecturaSoporte = isNaN(ultima) ? 0 : ultima
+      if (isNaN(ultima)) {
+        const [row] = await db.query(
+          "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ? AND emisor_rol = 'admin'",
+          [usuario.id],
+        )
+        req.session.ultimaLecturaSoporte = row[0].lastId || 0
+        res.cookie("ultimaLecturaSoporte", req.session.ultimaLecturaSoporte, { maxAge: 31536000000 })
+      } else {
+        req.session.ultimaLecturaSoporte = ultima
+      }
     }
 
     console.log(`✅ Usuario logueado: ${email} (${usuario.rol})`)

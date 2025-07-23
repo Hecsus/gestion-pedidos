@@ -235,4 +235,9 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
 - Se eliminaron archivos de middleware duplicados y la carpeta `bin` para
   simplificar la estructura. También se ajustó la documentación y el dashboard
   ahora normaliza correctamente el estado de los pedidos recientes.
+- La vista de pedidos de los clientes emplea la cabecera común y vuelve a
+  mostrar el contador de mensajes pendientes de soporte.
+- Si el usuario no tenía registrada la última lectura de soporte al iniciar
+  sesión, se marcan como leídos los mensajes previos para que el indicador solo
+  contabilice los nuevos.
 
