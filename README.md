@@ -235,4 +235,8 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   garantizar que siempre muestre texto y colores coherentes.
 - El contador de mensajes sin leer en el menú ahora se conserva tras cerrar
   sesión y volver a entrar.
+- Se corrigió la lectura de la cookie de soporte moviendo `cookie-parser` antes
+  del middleware que cuenta los mensajes pendientes.
+- La columna de pedidos recientes admite estados con espacios manteniendo los
+  colores de la gestión de pedidos.
 

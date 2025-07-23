@@ -172,6 +172,7 @@
                                 </thead>
                                 <tbody>
                                     <% pedidosRecientes.forEach(pedido => { %>
+                                        <% const estadoNorm = (pedido.estado || '').trim().toLowerCase().replace(' ', '_'); %>
                                         <tr>
                                             <td><strong>#<%= pedido.id %></strong></td>
                                             <td>
@@ -180,8 +181,8 @@
                                             </td>
                                             <td class="fw-bold text-primary">€<%= Number(pedido.total).toFixed(2) %></td>
                                             <td>
-                                                <span class="badge <%= pedido.estado === 'entregado' ? 'bg-success text-white' : pedido.estado === 'terminado' ? 'bg-info text-white' : pedido.estado === 'en_proceso' ? 'bg-warning' : pedido.estado === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>">
-                                                    <%= pedido.estado === 'en_proceso'
+                                                <span class="badge <%= estadoNorm === 'entregado' ? 'bg-success text-white' : estadoNorm === 'terminado' ? 'bg-info text-white' : estadoNorm === 'en_proceso' ? 'bg-warning' : estadoNorm === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>">
+                                                    <%= estadoNorm === 'en_proceso'
                                                         ? 'En Proceso'
                                                         : pedido.estado
                                                         ? pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1)

@@ -39,6 +39,9 @@ const sessionMiddleware = session({
 })
 app.use(sessionMiddleware)
 
+// Parsear cookies antes de otros middlewares que las utilicen
+app.use(cookieParser())
+
 // Hacer disponible el usuario en todas las vistas
 app.use((req, res, next) => {
   res.locals.usuario = req.session.usuario || null
@@ -74,7 +77,6 @@ app.use(logger("dev")) // Log de peticiones HTTP
 app.use(express.json()) // Parsear JSON en el body
 // Usar extended:true para permitir estructuras anidadas en formularios
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser()) // Parsear cookies
 app.use(
   helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false })
 )
