@@ -172,7 +172,18 @@
                                 </thead>
                                 <tbody>
                                     <% pedidosRecientes.forEach(pedido => { %>
-                                        <% const estadoNorm = (pedido.estado || '').trim().toLowerCase().replace(' ', '_'); %>
+                                        <%
+                                            // Normalizamos el estado para poder
+                                            // asignar las clases de color.
+                                            // Reemplazamos todos los espacios por
+                                            // guiones bajos para coincidir con los
+                                            // valores de la vista de gestión de pedidos
+                                            const estadoNorm = (pedido.estado || 'recibido')
+                                                .toString()
+                                                .trim()
+                                                .toLowerCase()
+                                                .replace(/\s+/g, '_');
+                                        %>
                                         <tr>
                                             <td><strong>#<%= pedido.id %></strong></td>
                                             <td>
@@ -181,12 +192,22 @@
                                             </td>
                                             <td class="fw-bold text-primary">€<%= Number(pedido.total).toFixed(2) %></td>
                                             <td>
-                                                <span class="badge <%= estadoNorm === 'entregado' ? 'bg-success text-white' : estadoNorm === 'terminado' ? 'bg-info text-white' : estadoNorm === 'en_proceso' ? 'bg-warning' : estadoNorm === 'cancelado' ? 'bg-cancelado text-white' : 'bg-secondary text-white' %>">
-                                                    <%= estadoNorm === 'en_proceso'
-                                                        ? 'En Proceso'
-                                                        : pedido.estado
-                                                        ? pedido.estado.charAt(0).toUpperCase() + pedido.estado.slice(1)
-                                                        : 'Sin estado' %>
+                                                <span class="badge <%= estadoNorm === 'entregado'
+                                                    ? 'bg-success text-white'
+                                                    : estadoNorm === 'terminado'
+                                                    ? 'bg-info text-white'
+                                                    : estadoNorm === 'en_proceso'
+                                                    ? 'bg-warning'
+                                                    : estadoNorm === 'cancelado'
+                                                    ? 'bg-cancelado text-white'
+                                                    : 'bg-secondary text-white' %>">
+                                                    <%
+                                                        // Mostrar el texto del estado con la primera letra en mayúscula
+                                                        const textoEstado = estadoNorm === 'en_proceso'
+                                                            ? 'En Proceso'
+                                                            : estadoNorm.replace('_', ' ');
+                                                    %>
+                                                    <%= textoEstado.charAt(0).toUpperCase() + textoEstado.slice(1) %>
                                                 </span>
                                             </td>
                                             <td><%= new Date(pedido.fecha_pedido).toLocaleDateString('es-ES') %></td>

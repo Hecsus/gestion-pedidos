@@ -30,8 +30,6 @@ Este proyecto es una aplicación web de ejemplo desarrollada con **Node.js**, **
 ```
 .
 ├── app.js             # Aplicación principal de Express
-├── bin/
-│   └── www            # Ejemplo de inicialización con Socket.IO
 ├── config/
 │   └── db.js          # Conexión a MySQL
 ├── controllers/       # Controladores para cada sección
@@ -59,11 +57,8 @@ Este proyecto es una aplicación web de ejemplo desarrollada con **Node.js**, **
   Archivo principal que configura Express. Carga las variables de entorno con `dotenv`, aplica middlewares básicos (`morgan`, `cookie-parser`, `express.json`, `express.urlencoded`) y protege la aplicación con `helmet` y `express-rate-limit`.
   Administra sesiones con `express-session` y sirve archivos estáticos desde `public/`.
   Configura EJS como motor de plantillas y define las rutas principales importando los routers de la carpeta `routes`.  
-  También inicializa un servidor HTTP con Socket.IO para el chat de soporte, compartiendo la sesión con los sockets. Maneja los eventos de conexión, recepción de mensajes y desconexión.  
+  También inicializa un servidor HTTP con Socket.IO para el chat de soporte, compartiendo la sesión con los sockets. Maneja los eventos de conexión, recepción de mensajes y desconexión.
   Finalmente levanta el servidor en el puerto especificado y exporta la instancia de Express.
-
-- **`bin/www`**  
-  Alternativa de arranque del servidor (usado comúnmente por `express-generator`). Obtiene la instancia de `io` desde `app.js` y define el comportamiento del chat cuando un usuario se conecta. Actualmente se incluye solo como referencia.
 
 ### Carpeta `controllers`
 
@@ -107,8 +102,7 @@ Define funciones para proteger rutas:
   - `requireAdmin` exige que el usuario tenga rol `admin`.  
   - `requireClient` comprueba que el usuario sea un cliente.
 
-- **`authMiddleware.js`**, **`verificarAdmin.js`**, **`verificarSesion.js`**  
-  Middlewares más simples (en algunos casos redundantes) que realizan comprobaciones básicas de sesión y rol. Se conservan para compatibilidad con algunas rutas.
+Los middlewares anteriores `authMiddleware.js`, `verificarAdmin.js` y `verificarSesion.js` se han eliminado por ser duplicados de `auth.js` y no estar referenciados en el código.
 
 ### Carpeta `routes`
 
@@ -138,7 +132,6 @@ Contiene las plantillas EJS. Entre ellas:
 ### Carpeta `public`
 
 - **`public/css/style.css`** – Hojas de estilo principales que definen los colores y aspectos de toda la aplicación.
-- **`public/stylesheets/style.css`** – Archivo creado por la plantilla inicial de Express, se mantiene para compatibilidad.
 
 ## Variables de entorno
 
@@ -239,4 +232,7 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   del middleware que cuenta los mensajes pendientes.
 - La columna de pedidos recientes admite estados con espacios manteniendo los
   colores de la gestión de pedidos.
+- Se eliminaron archivos de middleware duplicados y la carpeta `bin` para
+  simplificar la estructura. También se ajustó la documentación y el dashboard
+  ahora normaliza correctamente el estado de los pedidos recientes.
 
