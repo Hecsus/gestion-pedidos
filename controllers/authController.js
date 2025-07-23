@@ -130,15 +130,11 @@ exports.procesarLogin = async (req, res) => {
 
     if (usuario.rol === "cliente") {
       // Mantener la última lectura de soporte usando la cookie.
-      // Si no existe, consideramos leídos todos los mensajes previos
+      // Si no existe, comenzamos desde cero para contar todos los mensajes.
       const ultima = parseInt(req.cookies.ultimaLecturaSoporte, 10)
       if (isNaN(ultima)) {
-        const [row] = await db.query(
-          "SELECT MAX(id) AS lastId FROM mensajes_soporte WHERE usuario_id = ? AND emisor_rol = 'admin'",
-          [usuario.id],
-        )
-        req.session.ultimaLecturaSoporte = row[0].lastId || 0
-        res.cookie("ultimaLecturaSoporte", req.session.ultimaLecturaSoporte, { maxAge: 31536000000 })
+        req.session.ultimaLecturaSoporte = 0
+        res.cookie("ultimaLecturaSoporte", 0, { maxAge: 31536000000 })
       } else {
         req.session.ultimaLecturaSoporte = ultima
       }

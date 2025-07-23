@@ -93,7 +93,12 @@ const messagesUrl = '/api/mensajes<%= usuario.rol === 'admin' && cliente ? '?usu
 if (!isAdminWithoutClient) {
   fetch(messagesUrl)
     .then(r => r.json())
-    .then(data => { data.forEach(addMessageToChat); });
+    .then(data => {
+      data.forEach(addMessageToChat);
+      if (currentUser.rol !== 'admin') {
+        fetch('/api/mensajes/leido', { method: 'POST' });
+      }
+    });
 }
 
 // 👤 Información del usuario actual

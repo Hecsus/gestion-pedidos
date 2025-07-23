@@ -240,4 +240,6 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
 - Si el usuario no tenía registrada la última lectura de soporte al iniciar
   sesión, se marcan como leídos los mensajes previos para que el indicador solo
   contabilice los nuevos.
+- La lectura de mensajes de soporte se registra ahora tras cargar el chat en el
+  cliente, evitando desajustes en el contador de pendientes.
 
