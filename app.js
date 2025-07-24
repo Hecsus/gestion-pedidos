@@ -54,7 +54,8 @@ app.use(async (req, res, next) => {
   if (req.session.usuario && req.session.usuario.rol === 'cliente') {
     try {
       const userId = req.session.usuario.id
-      const cookieRead = parseInt(req.cookies.ultimaLecturaSoporte, 10)
+      const cookieName = `ultimaLecturaSoporte_${userId}`
+      const cookieRead = parseInt(req.cookies[cookieName], 10)
       const lastRead = req.session.ultimaLecturaSoporte || (isNaN(cookieRead) ? 0 : cookieRead)
       const [rows] = await db.query(
         `SELECT COUNT(*) AS sin_leer
