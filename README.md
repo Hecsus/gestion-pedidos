@@ -242,4 +242,6 @@ cualquier cliente en todo momento y muestra cuántos mensajes quedan pendientes 
   contabilice los nuevos.
 - La lectura de mensajes de soporte se registra ahora tras cargar el chat en el
   cliente, evitando desajustes en el contador de pendientes.
+- La cookie que guarda la última lectura de soporte se diferencia ahora por
+  usuario, de modo que cada cuenta mantiene sus propios mensajes pendientes.
 
